@@ -3,19 +3,27 @@
 #include <Adafruit_SSD1306.h>
 #include <max6675.h>
 
-// If using software SPI (the default case):
-#define OLED_MOSI   9
-#define OLED_CLK   10
-#define OLED_DC    11
-#define OLED_CS    12
-#define OLED_RESET 13
+// Oled SPI interface 3.3volts!
+#define OLED_MOSI   9 //D1 - PIN 15
+#define OLED_CLK   10 //D0 - PIN 16
+#define OLED_DC    11 //DC - PIN 17
+#define OLED_CS    12 //CS - PIN 18
+#define OLED_RESET 13 //RES - PIN 19
 
-#define thermoDO 4
-#define thermoCS 5
-#define thermoCLK 6
+//MAX6675 3.3volts!
+#define thermoDO 4 //SO - PIN 6
+#define thermoCS 5 //CS - PIN 11
+#define thermoCLK 6 //SCK - PIN 12
 
-#define HEAT_PIN 14
-#define FAN_PIN 15
+//SOLID STATE RELAYS
+#define HEAT_PIN 14 // PIN 23
+#define FAN_PIN 15 // PIN 24
+
+//ROTARY ENCODER
+#define BUTTON 
+#define encoder0PinA 2  
+#define encoder0PinB 3
+
 
 MAX6675 temp_sensor;
 Adafruit_SSD1306 display(128, 64, OLED_MOSI, OLED_CLK, OLED_DC, OLED_RESET, OLED_CS);
