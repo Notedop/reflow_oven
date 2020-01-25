@@ -32,14 +32,14 @@ void setup() {
   Serial.begin(9600);
   // SSD1306_SWITCHCAPVCC = generate display voltage from 3.3V internally
   display.begin();
+  temp_sensor.begin(thermoCLK, thermoCS, thermoDO);
+
   // init done
   //display configurations
   display.setFont();
   display.setTextColor(WHITE);
   display.setTextWrap(false);
   
-  temp_sensor.begin(thermoCLK, thermoCS, thermoDO);
-
   attachInterrupt(0, doEncoder , CHANGE);  // encoder pin on interrupt 0 - pin 2
 
 }
