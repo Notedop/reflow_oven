@@ -2,6 +2,7 @@
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
 #include <max6675.h>
+#include <Encoder.h>
 
 // Oled SPI interface 3.3volts!
 #define OLED_MOSI   9 //D1 - PIN 15
@@ -27,6 +28,7 @@
 
 MAX6675 temp_sensor;
 Adafruit_SSD1306 display(128, 64, OLED_MOSI, OLED_CLK, OLED_DC, OLED_RESET, OLED_CS);
+Encoder encoder(encoder0PinA, encoder0PinB);
 
 const uint8_t numberOfReads = 16;
 const uint8_t screenWidth = 128;
@@ -43,6 +45,11 @@ uint8_t chartPos = 0;
 
 uint16_t intervalSensorRead = 10000; 
 uint32_t tempMillis = 0;
+
+void doEncoder(){
+    encoder.update();
+    Serial.println( encoder.getPosition() );
+}
 
 void setup() {
   
@@ -61,6 +68,8 @@ void setup() {
   display.setTextWrap(false);
   
   temp_sensor.begin(thermoCLK, thermoCS, thermoDO);
+
+  attachInterrupt(0, doEncoder , CHANGE);  // encoder pin on interrupt 0 - pin 2
 
 }
 
