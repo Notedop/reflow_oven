@@ -16,8 +16,9 @@
 
 //ROTARY ENCODER
 #define BUTTON 
-#define encoder0PinA 2  
-#define encoder0PinB 3
+#define encoder0PinA 2
+#define encoder0Button 3  
+#define encoder0PinB 7
 
 //Screen chart
 #define numberOfReads 16

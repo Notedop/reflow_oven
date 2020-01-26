@@ -45,10 +45,11 @@ class Encoder {
 
     // constructor : sets pins as inputs and turns on pullup resistors
 
-    Encoder( int8_t PinA, int8_t PinB) : pin_a ( PinA), pin_b( PinB ) {
+    Encoder( int8_t PinA, int8_t PinB, int8_t PinC) : pin_a ( PinA), pin_b( PinB ), pin_c( PinC ) {
       // set pin a and b to be input
       pinMode(pin_a, INPUT);
       pinMode(pin_b, INPUT);
+      pinMode(pin_c, INPUT_PULLUP);
       // and turn on pull-up resistors
       digitalWrite(pin_a, HIGH);
       digitalWrite(pin_b, HIGH);
@@ -73,6 +74,18 @@ class Encoder {
       position = p;
     };
 
+    bool getClicked (){
+      return clicked;
+    }
+
+    void setClicked (bool c){
+      clicked=c;
+    }
+
+    void resetClicked() {
+      clicked=false;
+    }
+
   private:
 
     long int position;
@@ -80,6 +93,10 @@ class Encoder {
     int8_t pin_a;
 
     int8_t pin_b;
+
+    int8_t pin_c;
+
+    bool clicked = false;
 };
 
 #endif // __ENCODER_H__

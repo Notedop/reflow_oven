@@ -10,7 +10,7 @@
 
 MAX6675 temp_sensor;
 Adafruit_SSD1306 display(128, 64, OLED_MOSI, OLED_CLK, OLED_DC, OLED_RESET, OLED_CS);
-Encoder encoder(encoder0PinA, encoder0PinB);
+Encoder encoder(encoder0PinA, encoder0PinB, encoder0Button);
 
 char Celsius_C[8];
 double Celcius_d;
@@ -18,14 +18,26 @@ double Celcius_d;
 uint8_t temperatureHistory[numberOfReads] = {10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10};
 uint8_t chartPos = 0;
 
+unsigned long lastRead = 0;
+unsigned long debounceDelay = 50;
+
 uint16_t intervalSensorRead = 10000; 
 uint32_t tempMillis = 0;
 
 MenuSystem menu;
 
-void doEncoder(){
+void doEncoderScroll(){
     encoder.update();
     Serial.println(encoder.getPosition());
+    lastRead = millis();
+}
+
+void doEncoderClick(){
+    if((millis() - lastRead)>debounceDelay) {
+      encoder.setClicked(true);
+      Serial.println(encoder.getClicked());
+      lastRead = millis();
+    }
 }
 
 void setup() {
@@ -50,7 +62,8 @@ void setup() {
   // display.println("blabla");
   // display.display();
   
-  attachInterrupt(0, doEncoder , CHANGE);  // encoder pin on interrupt 0 - pin 2
+  attachInterrupt(0, doEncoderScroll , CHANGE);  // encoder pin on interrupt 0 - pin 2
+  attachInterrupt(1, doEncoderClick , LOW); // 
   menu=MenuSystem(display);
   menu.InitMenu(mnuRoot,cntRoot,1);
   Serial.println("end");
@@ -85,9 +98,8 @@ void addNewValue(uint8_t value) {
 
 void loop() {
 
-  int keycode=0;
   int clickedItem=0; 
-  
+
   if (encoder.getPosition() >= 2 ) {
     Serial.println("ACTON_DOWN");
     menu.ProcessMenu(ACTION_DOWN);
@@ -97,7 +109,11 @@ void loop() {
     Serial.println("ACTION_UP");
     menu.ProcessMenu(ACTION_UP);
     encoder.setPosition(0); //reset the position
-  } 
+  } else if (encoder.getClicked()) {
+    Serial.println("ACTION_SELECT");
+    clickedItem=menu.ProcessMenu(ACTION_SELECT);
+    encoder.resetClicked(); //reset the position
+  }
 
   if (clickedItem>0)
   {
@@ -162,45 +178,40 @@ void loop() {
           break;
       }
 
-  } 
-
-
-  // Celcius_d = temp_sensor.readCelsius();
-  // dtostrf(Celcius_d, 4,2, Celsius_C);
-  // Serial.println(Celsius_C);
-  // display.clearDisplay();
-  
-  // while (Serial.available() > 0)
-  // {
-  //   Serial.read();
-  // }
-
-
-  // if (Celcius_d > 235.0)
-  // {
-  //   digitalWrite(HEAT_PIN, LOW);
-  //   setTopText(OFF, 112, 0, 2);
-  // }
-  // else if (Celcius_d == 235.0)
-  // {
-  //   digitalWrite(HEAT_PIN, LOW);  
-  //   setTopText("-", 112, 0, 2);
-  // }
-  // else if (Celcius_d < 235.0)
-  // {
-  //   digitalWrite(HEAT_PIN, HIGH);
-  //   setTopText(ON, 112, 0, 2);
-  // }
-
-  // setTopText(Celsius_C,0,0,2);
-  // drawChart();
-  // display.display();
-  // display.clearDisplay();
-
-  // if ((millis()-tempMillis) > intervalSensorRead) {
-  //   addNewValue((uint8_t) Celcius_d);
-  //   tempMillis=millis();
-  // }
-  // //chartPos=rand();
-  // delay(1000);
+  }
 }
+
+  void doChart() {
+    Celcius_d = temp_sensor.readCelsius();
+    dtostrf(Celcius_d, 4,2, Celsius_C);
+    Serial.println(Celsius_C);
+    display.clearDisplay();
+
+    if (Celcius_d > 235.0)
+    {
+      digitalWrite(HEAT_PIN, LOW);
+      setTopText(OFF, 112, 0, 2);
+    }
+    else if (Celcius_d == 235.0)
+    {
+      digitalWrite(HEAT_PIN, LOW);  
+      setTopText("-", 112, 0, 2);
+    }
+    else if (Celcius_d < 235.0)
+    {
+      digitalWrite(HEAT_PIN, HIGH);
+      setTopText(ON, 112, 0, 2);
+    }
+
+    setTopText(Celsius_C,0,0,2);
+    drawChart();
+    display.display();
+    display.clearDisplay();
+
+    if ((millis()-tempMillis) > intervalSensorRead) {
+      addNewValue((uint8_t) Celcius_d);
+      tempMillis=millis();
+    }
+    //chartPos=rand();
+    delay(1000);
+  }
