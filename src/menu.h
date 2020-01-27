@@ -13,7 +13,7 @@ const char  itmRoot[] PROGMEM = "Root menu";
 const char  itmSubmenu1[] PROGMEM = "Submenu 1";
 const char  itmSubmenu2[] PROGMEM = "Submenu 2";
 const char  itmSubmenu3[] PROGMEM = "Submenu 3";
-const char  itmMessageBox[] PROGMEM = "Message box";
+const char  itmMessageBox[] PROGMEM = "Test";
 const char  itmItem1[] PROGMEM = "Item 1";
 const char  itmItem2[] PROGMEM = "Item 2";
 const char  itmItem3[] PROGMEM = "Item 3";
@@ -34,15 +34,3 @@ const PROGMEM  int  cntSubmenu2  = 3;
 
 const char * const mnuSubmenu3[] PROGMEM = {itmSubmenu3,itmEnabled,itmDisabled,itmBack};
 const int  cntSubmenu3 PROGMEM = 3;
-
-
-#include <avr/pgmspace.h>
-const char string_0[] PROGMEM = "String 0"; // "String 0" etc are strings to store - change to suit.
-const char string_1[] PROGMEM = "String 1";
-const char string_2[] PROGMEM = "String 2";
-const char string_3[] PROGMEM = "String 3";
-const char string_4[] PROGMEM = "String 4";
-const char string_5[] PROGMEM = "String 5";
-
-
-const char *const string_table[] PROGMEM = {string_0, string_1, string_2, string_3, string_4, string_5};
