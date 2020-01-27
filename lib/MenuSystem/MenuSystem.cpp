@@ -50,8 +50,8 @@ int MenuSystem::ProcessMenu(int action)
 
 void MenuSystem::ShowMenu()
 {
-  if (_selectedIndex>_firstVisible+2)
-    _firstVisible=_selectedIndex-2;
+  if (_selectedIndex>_firstVisible+5) //TODO: Make macro to define the 5 value using TOTAL_DISPLAYED_ITEMS
+    _firstVisible=_selectedIndex-5;
   else if (_selectedIndex<_firstVisible)
     _firstVisible=_selectedIndex;
   
@@ -63,7 +63,7 @@ void MenuSystem::ShowMenu()
   qmd.Title(tempBuffer);
   
   // display items
-  int p = 3;
+  int p = 6; //TODO: Make this a configurable constant TOTAL_DISPLAYED_ITEMS
   if (p > (_itemCount-_firstVisible+1))
     p=_itemCount-_firstVisible+1;
   for (int i=0;i<p;i++)

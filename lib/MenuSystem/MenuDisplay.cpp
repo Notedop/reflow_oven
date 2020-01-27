@@ -14,17 +14,10 @@ MenuDisplay::MenuDisplay( Adafruit_SSD1306 disp)
     _disp=disp;
     _disp.begin();
     _disp.setTextColor(WHITE);
-    _disp.setTextWrap(false);
+    _disp.setTextWrap(true);
     _disp.clearDisplay();
      _disp.setCursor(0,0);
-     _disp.setTextSize(2);
-     _disp.println("menudisplay");
-     _disp.display();
-     delay(500);
-     _disp.clearDisplay();
-     _disp.setCursor(0,0);
-     _disp.println("constructor");
-     _disp.display();
+     _disp.setTextSize(1); //TODO: Make this a configurable constant. Or maybe even better; configurable via menu itself
     // Serial.println("end menudisplay");
 
 }
@@ -37,27 +30,28 @@ void MenuDisplay::Start()
 void MenuDisplay::Finish()
 {
     _disp.display();
+    delay(1);
 }
 
 void MenuDisplay::Title(const char text[])
 {
   _disp.setTextColor(SSD1306_WHITE);
   _disp.setCursor(0,0);
-  _disp.println(text);
+  _disp.print(text);
 }
 
 void MenuDisplay::Item(int index,const char text[])
 {
   _disp.setTextColor(SSD1306_WHITE);
-  _disp.setCursor(5,(index*16)+16);
-  _disp.println(text);
+  _disp.setCursor(5,(index*8)+16); //TODO: Create constants for pixel offset and char pixel height. Height of char with textsize 1 is 8
+  _disp.print(text);
 }
 
 void MenuDisplay::Highlight(int index,const char text[])
 {
-  _disp.setCursor(5,(index*16)+16);
+  _disp.setCursor(5,(index*8)+16); //TODO: Create constants for pixel offset and char pixel height. Height of char with textsize 1 is 8
   _disp.setTextColor(SSD1306_BLACK, SSD1306_WHITE);
-  _disp.println(text);
+  _disp.print(text);
 }
 
 // void MenuDisplay::MessageBox(const char text[])
