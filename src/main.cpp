@@ -28,14 +28,13 @@ MenuSystem menu;
 
 void doEncoderScroll(){
     encoder.update();
-    Serial.println(encoder.getPosition());
-    lastRead = millis();
+    //Serial.println(encoder.getPosition());
 }
 
 void doEncoderClick(){
     if((millis() - lastRead)>debounceDelay) {
       encoder.setClicked(true);
-      Serial.println(encoder.getClicked());
+      //Serial.println(encoder.getClicked());
       lastRead = millis();
     }
 }
