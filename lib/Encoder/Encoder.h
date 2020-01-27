@@ -4,73 +4,40 @@
 #include <Arduino.h>
 
 class Encoder {
-    /*
-      wraps encoder setup and update functions in a class
-
-      !!! NOTE : user must call the encoders update method from an
-      interrupt function himself! i.e. user must attach an interrupt to the
-      encoder pin A and call the encoder update method from within the
-      interrupt
-
-      uses Arduino pull-ups on A & B channel outputs
-      turning on the pull-ups saves having to hook up resistors
-      to the A & B channel outputs
-
-      // ------------------------------------------------------------------------------------------------
-      // Example usage :
-      // ------------------------------------------------------------------------------------------------
-          #include "Encoder.h"
-
-          Encoder encoder(2, 4);
-
-          void setup() {
-              attachInterrupt(0, doEncoder, CHANGE);
-              Serial.begin (115200);
-              Serial.println("start");
-          }
-
-          void loop(){
-              // do some stuff here - the joy of interrupts is that they take care of themselves
-          }
-
-          void doEncoder(){
-              encoder.update();
-              Serial.println( encoder.getPosition() );
-          }
-      // ------------------------------------------------------------------------------------------------
-      // Example usage end
-      // ------------------------------------------------------------------------------------------------
-    */
   public:
 
     // constructor : sets pins as inputs and turns on pullup resistors
 
     Encoder( int8_t PinA, int8_t PinB, int8_t PinC) : pin_a ( PinA), pin_b( PinB ), pin_c( PinC ) {
       // set pin a and b to be input
-      pinMode(pin_a, INPUT);
-      pinMode(pin_b, INPUT);
+      pinMode(pin_a, INPUT_PULLUP);
+      pinMode(pin_b, INPUT_PULLUP);
       pinMode(pin_c, INPUT_PULLUP);
-      // and turn on pull-up resistors
-      digitalWrite(pin_a, HIGH);
-      digitalWrite(pin_b, HIGH);
     };
 
-    // call this from your interrupt function
-
+    // call this from your interrupt function (from http://makeatronics.blogspot.com/2013/02/efficiently-reading-quadrature-with.html)
     void update () {
-      if (digitalRead(pin_a)) digitalRead(pin_b) ? position++ : position--;
-      else digitalRead(pin_b) ? position-- : position++;
+
+      //static int8_t lookup_table[] = {0,-1,1,0,1,0,0,-1,-1,0,0,1,0,1,-1,0};     // 2 interrupts
+      static int8_t lookup_table[] = {0,0,0,-1,0,0,1,0,0,1,0,0,-1,0,0,0};         // 1 interrupt, will loose 50% resolution.
+      static uint8_t enc_val = 0;
+      
+      enc_val = enc_val << 2;
+      //enc_val = enc_val | ((PIND & 0b1100) >> 2)                                //2 interrupts: attached to arduino pin 2 and 3
+      enc_val = enc_val | ((PIND & 0b11000) >> 3);                                //1 interrupt: attached to arduino pin 3 and 4 where 3 is interrupt!
+  
+      position = position + lookup_table[enc_val & 0b1111];
     };
 
     // returns current position
 
-    long int getPosition () {
+    long getPosition () {
       return position;
     };
 
     // set the position value
 
-    void setPosition ( const long int p) {
+    void setPosition ( long p) {
       position = p;
     };
 
@@ -88,7 +55,7 @@ class Encoder {
 
   private:
 
-    long int position;
+    volatile long position;
 
     int8_t pin_a;
 
@@ -97,6 +64,7 @@ class Encoder {
     int8_t pin_c;
 
     bool clicked = false;
+
 };
 
 #endif // __ENCODER_H__

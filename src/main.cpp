@@ -62,8 +62,8 @@ void setup() {
   // display.println("blabla");
   // display.display();
   
-  attachInterrupt(0, doEncoderScroll , CHANGE);  // encoder pin on interrupt 0 - pin 2
-  attachInterrupt(1, doEncoderClick , LOW); // 
+  attachInterrupt(1, doEncoderScroll , CHANGE);  // encoder pin on interrupt 1 - pin 3
+  attachInterrupt(0, doEncoderClick , LOW); // 
   menu=MenuSystem(display);
   menu.InitMenu(mnuRoot,cntRoot,1);
   Serial.println("end");
