@@ -10,45 +10,42 @@
 
 MenuSystem::MenuSystem() {};
 
-MenuSystem::MenuSystem(Adafruit_SSD1306* disp)
-{
-  //Serial.println("constrcutor menu system");
-  qmd=MenuDisplay(disp);
-  _selectedIndex=0;
-  _itemCount=0;
-  _firstVisible=1;
+MenuSystem::MenuSystem(Adafruit_SSD1306 *disp) {
+    //Serial.println("constrcutor menu system");
+    qmd = MenuDisplay(disp);
+    _selectedIndex = 0;
+    _itemCount = 0;
+    _firstVisible = 1;
 }
 
-void MenuSystem::InitMenu(const char * const * page, int itemCount, int selectedIndex)
-{
-  CurrentMenu=page;
-  _selectedIndex=selectedIndex;
-  _itemCount=itemCount;
+void MenuSystem::InitMenu(const char *const *page, int itemCount, int selectedIndex) {
+    CurrentMenu = page;
+    _selectedIndex = selectedIndex;
+    _itemCount = itemCount;
 //  ProcessMenu(ACTION_NONE);
-  ShowMenu();
+    ShowMenu();
 }
 
 
 int MenuSystem::ProcessMenu(int action) {
 
-if (!_inputBox.isWaitingForInput()) {
-    if (action == ACTION_DOWN)
-        _selectedIndex++;
-    if (action == ACTION_UP)
-        _selectedIndex--;
+    if (!_inputBox.isWaitingForInput()) {
+        if (action == ACTION_DOWN)
+            _selectedIndex++;
+        if (action == ACTION_UP)
+            _selectedIndex--;
 
-    if (_selectedIndex > _itemCount)
-        _selectedIndex = 1;
-    if (_selectedIndex < 1)
-        _selectedIndex = _itemCount;
+        if (_selectedIndex > _itemCount)
+            _selectedIndex = 1;
+        if (_selectedIndex < 1)
+            _selectedIndex = _itemCount;
 
-    if (action == ACTION_SELECT)
-        return _selectedIndex;
+        if (action == ACTION_SELECT)
+            return _selectedIndex;
 
-    ShowMenu();
+        ShowMenu();
 
-    }
-    else {
+    } else {
         if (action == ACTION_DOWN)
             if (_inputBox.getCurrentValue() < _inputBox.getMaxValue()) {
                 _inputBox.setCurrentValue(_inputBox.getCurrentValue() + 1);
@@ -68,39 +65,37 @@ if (!_inputBox.isWaitingForInput()) {
     return 0;
 }
 
-void MenuSystem::ShowMenu()
-{
-  if (_selectedIndex>_firstVisible+5) //TODO: Make macro to define the 5 value using TOTAL_DISPLAYED_ITEMS
-    _firstVisible=_selectedIndex-5;
-  else if (_selectedIndex<_firstVisible)
-    _firstVisible=_selectedIndex;
-  
-  qmd.Start();
-  
-  // display title
-  strcpy_P(tempBuffer, (char*)pgm_read_word(&(CurrentMenu[0])));
-  Serial.println(tempBuffer);
-  qmd.Title(tempBuffer);
-  
-  // display items
-  int p = 6; //TODO: Make this a configurable constant TOTAL_DISPLAYED_ITEMS
-  if (p > (_itemCount-_firstVisible+1))
-    p=_itemCount-_firstVisible+1;
-  for (int i=0;i<p;i++)
-  {
-    strcpy_P(tempBuffer, (char*)pgm_read_word(&(CurrentMenu[i+_firstVisible])));
-    qmd.Item(i,tempBuffer);
-  }
-  
-   strcpy_P(tempBuffer, (char*)pgm_read_word(&(CurrentMenu[_selectedIndex])));
+void MenuSystem::ShowMenu() {
+    if (_selectedIndex > _firstVisible + 5) //TODO: Make macro to define the 5 value using TOTAL_DISPLAYED_ITEMS
+        _firstVisible = _selectedIndex - 5;
+    else if (_selectedIndex < _firstVisible)
+        _firstVisible = _selectedIndex;
 
-   // display selection
-   qmd.Highlight(_selectedIndex-_firstVisible,tempBuffer);
-  
-  qmd.Finish();
+    qmd.Start();
+
+    // display title
+    strcpy_P(tempBuffer, (char *) pgm_read_word(&(CurrentMenu[0])));
+    Serial.println(tempBuffer);
+    qmd.Title(tempBuffer);
+
+    // display items
+    int p = 6; //TODO: Make this a configurable constant TOTAL_DISPLAYED_ITEMS
+    if (p > (_itemCount - _firstVisible + 1))
+        p = _itemCount - _firstVisible + 1;
+    for (int i = 0; i < p; i++) {
+        strcpy_P(tempBuffer, (char *) pgm_read_word(&(CurrentMenu[i + _firstVisible])));
+        qmd.Item(i, tempBuffer);
+    }
+
+    strcpy_P(tempBuffer, (char *) pgm_read_word(&(CurrentMenu[_selectedIndex])));
+
+    // display selection
+    qmd.Highlight(_selectedIndex - _firstVisible, tempBuffer);
+
+    qmd.Finish();
 }
 
-void MenuSystem::ShowInputBox(char * title, int minValue, int maxValue) {
+void MenuSystem::ShowInputBox(char *title, int minValue, int maxValue) {
     _inputBox.setWaitingForInput(true);
     _inputBox.setTitle(title);
     _inputBox.setMinValue(minValue);
