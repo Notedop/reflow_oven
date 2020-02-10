@@ -4,11 +4,12 @@
 
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
+#include "../customInputBox/customInputBox.h"
 
 class MenuDisplay
 {
   public:
-    MenuDisplay(Adafruit_SSD1306 disp);
+    explicit MenuDisplay(Adafruit_SSD1306 * disp);
     MenuDisplay();
     void Start();
     void Finish();
@@ -16,8 +17,8 @@ class MenuDisplay
     void Item(int index,const char text[]);
     void Highlight(int index,const char text[]);
     // void MessageBox(const char text[]);
-  private:
-//    char tempBuffer[32];
+    //    char tempBuffer[32];
+   void ShowInputBox(customInputBox inputBox);
 };
 
 

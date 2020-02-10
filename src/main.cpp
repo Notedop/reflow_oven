@@ -63,7 +63,7 @@ void setup() {
   
   attachInterrupt(1, doEncoderScroll , CHANGE);  // encoder pin on interrupt 1 - pin 3
   attachInterrupt(0, doEncoderClick , LOW); // 
-  menu=MenuSystem(display);
+  menu=MenuSystem(&display);
   menu.InitMenu(mnuRoot,cntRoot,1);
   Serial.println("end");
 
@@ -134,10 +134,15 @@ void loop() {
           break; 
       }
     // Logic for Submenu 1
-    else if (menu.CurrentMenu==mnuSubmenu1)
-      switch (clickedItem)
-      {
-        case 1:
+    else if (menu.CurrentMenu == mnuSubmenu1)
+        switch (clickedItem) {
+            case 1:
+                if (menu.inputAvailable()) {
+                    Serial.print("received following input");
+                    Serial.println(menu.getInput());
+                } else {
+                    menu.ShowInputBox("Input 1", 0, 255);
+                }
         case 2:
         case 3:
         case 4:

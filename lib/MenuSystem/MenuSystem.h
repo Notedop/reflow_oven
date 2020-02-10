@@ -4,10 +4,14 @@
 // 22.12.2013
 // HEADER
 /////////////////////
-#include "MenuDisplay.h"
+
 
 #ifndef MenuSystem_h
 #define MenuSystem_h
+
+#include <Adafruit_SSD1306.h>
+#include "MenuDisplay.h"
+#include "../customInputBox/customInputBox.h"
 
 #define ACTION_NONE    0
 #define ACTION_UP      1
@@ -20,20 +24,25 @@ class MenuSystem
 {
   public:
     MenuSystem();
-    MenuSystem(Adafruit_SSD1306 disp);
+    MenuSystem(Adafruit_SSD1306* disp);
     void InitMenu(const char * const * page, int itemCount, int selectedIndex);
     int ProcessMenu(int action);
     void ShowMenu();
     // void MessageBox(const char text[]) { qmd.MessageBox(text); };
-    
     const char * const * CurrentMenu;
-  private:
+    bool inputAvailable();
+    int getInput();
+    void ShowInputBox(char *title, int minValue, int maxValue);
+
+private:
+    void ShowInputBox();
     int _selectedIndex;
     int _itemCount;
     int _firstVisible;
-    
     char tempBuffer[32];
     MenuDisplay qmd;
+    customInputBox _inputBox = customInputBox("Test", 1,20);
+
 };
 
 #endif

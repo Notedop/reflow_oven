@@ -10,7 +10,7 @@
 
 MenuSystem::MenuSystem() {};
 
-MenuSystem::MenuSystem(Adafruit_SSD1306 disp)
+MenuSystem::MenuSystem(Adafruit_SSD1306* disp)
 {
   //Serial.println("constrcutor menu system");
   qmd=MenuDisplay(disp);
@@ -28,24 +28,44 @@ void MenuSystem::InitMenu(const char * const * page, int itemCount, int selected
   ShowMenu();
 }
 
-int MenuSystem::ProcessMenu(int action)
-{
-  if (action==ACTION_DOWN)
-    _selectedIndex++;
-  if (action==ACTION_UP)
-    _selectedIndex--;
-    
-  if (_selectedIndex>_itemCount)
-    _selectedIndex=1;
-  if (_selectedIndex<1)
-    _selectedIndex=_itemCount;
-  
-  if (action==ACTION_SELECT)
-    return _selectedIndex;
-  
-  ShowMenu();
-  
-  return 0;
+
+int MenuSystem::ProcessMenu(int action) {
+
+if (!_inputBox.isWaitingForInput()) {
+    if (action == ACTION_DOWN)
+        _selectedIndex++;
+    if (action == ACTION_UP)
+        _selectedIndex--;
+
+    if (_selectedIndex > _itemCount)
+        _selectedIndex = 1;
+    if (_selectedIndex < 1)
+        _selectedIndex = _itemCount;
+
+    if (action == ACTION_SELECT)
+        return _selectedIndex;
+
+    ShowMenu();
+
+    }
+    else {
+        if (action == ACTION_DOWN)
+            if (_inputBox.getCurrentValue() < _inputBox.getMaxValue()) {
+                _inputBox.setCurrentValue(_inputBox.getCurrentValue() + 1);
+                ShowInputBox();
+            }
+        if (action == ACTION_UP)
+            if (_inputBox.getCurrentValue() > _inputBox.getMinValue()) {
+                _inputBox.setCurrentValue(_inputBox.getCurrentValue() - 1);;
+                ShowInputBox();
+            }
+        if (action == ACTION_SELECT) {
+            _inputBox.setWaitingForInput(false);
+            //return selected index, so that we return to previous selected menu. I
+            return _selectedIndex;
+        }
+    }
+    return 0;
 }
 
 void MenuSystem::ShowMenu()
@@ -78,4 +98,31 @@ void MenuSystem::ShowMenu()
    qmd.Highlight(_selectedIndex-_firstVisible,tempBuffer);
   
   qmd.Finish();
+}
+
+void MenuSystem::ShowInputBox(char * title, int minValue, int maxValue) {
+    _inputBox.setWaitingForInput(true);
+    _inputBox.setTitle(title);
+    _inputBox.setMinValue(minValue);
+    _inputBox.setMaxValue(maxValue);
+    _inputBox.setCurrentValue(minValue);
+
+    ShowInputBox();
+}
+
+
+bool MenuSystem::inputAvailable() {
+    return _inputBox.isWaitingForInput();
+}
+
+int MenuSystem::getInput() {
+    return _inputBox.getCurrentValue();
+}
+
+void MenuSystem::ShowInputBox() {
+
+    qmd.Start();
+    qmd.ShowInputBox(_inputBox);
+    qmd.Finish();
+
 }
