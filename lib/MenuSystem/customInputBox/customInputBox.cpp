@@ -46,3 +46,7 @@ void customInputBox::setInputAvailable(bool inputAvailable) {
     _inputAvailable = inputAvailable;
 }
 
+const char *customInputBox::getTitle() const {
+    return _title;
+}
+

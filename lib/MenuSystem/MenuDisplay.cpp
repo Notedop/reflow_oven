@@ -1,5 +1,5 @@
 #include "MenuDisplay.h"
-#include "../customInputBox/customInputBox.h"
+#include "customInputBox/customInputBox.h"
 //#include <constants.h>
 
 Adafruit_SSD1306 * _disp;
@@ -55,10 +55,15 @@ void MenuDisplay::Highlight(int index,const char text[])
 
 void MenuDisplay::ShowInputBox(customInputBox inputBox) {
 
-    _disp->setCursor(20,20);
-    //_disp->setTextSize(3);
+
+    this->Title(inputBox.getTitle());
+    _disp->setCursor(55,20);
+    _disp->setTextSize(3);
     _disp->setTextColor(SSD1306_BLACK, SSD1306_WHITE);
+    //todo: center the value based on screen size and value size (depends on fontheight[pixels]*chars/2 etc etc
     _disp->print(inputBox.getCurrentValue());
+    _disp->drawRect(1,16,127,48,SSD1306_WHITE);
+    _disp->setTextSize(1);
 
 }
 

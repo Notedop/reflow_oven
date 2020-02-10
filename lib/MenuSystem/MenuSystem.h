@@ -11,7 +11,7 @@
 
 #include <Adafruit_SSD1306.h>
 #include "MenuDisplay.h"
-#include "../customInputBox/customInputBox.h"
+#include "customInputBox/customInputBox.h"
 
 #define ACTION_NONE    0
 #define ACTION_UP      1

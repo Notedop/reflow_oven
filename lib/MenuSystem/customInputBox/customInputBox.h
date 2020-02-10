@@ -26,6 +26,8 @@ public:
 
     void setWaitingForInput(bool waitingForInput);
 
+    const char *getTitle() const;
+
     void setTitle(const char* string);
 
     bool isInputAvailable() const;
