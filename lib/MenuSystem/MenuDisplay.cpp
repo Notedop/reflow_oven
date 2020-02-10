@@ -53,12 +53,10 @@ void MenuDisplay::Highlight(int index,const char text[])
   _disp->print(text);
 }
 
-void ShowInputBox(customInputBox inputBox);
-
 void MenuDisplay::ShowInputBox(customInputBox inputBox) {
 
     _disp->setCursor(20,20);
-    _disp->setTextSize(3);
+    //_disp->setTextSize(3);
     _disp->setTextColor(SSD1306_BLACK, SSD1306_WHITE);
     _disp->print(inputBox.getCurrentValue());
 

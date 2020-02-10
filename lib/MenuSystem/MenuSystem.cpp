@@ -13,6 +13,7 @@ MenuSystem::MenuSystem() {};
 MenuSystem::MenuSystem(Adafruit_SSD1306 *disp) {
     //Serial.println("constrcutor menu system");
     qmd = MenuDisplay(disp);
+    _inputBox = customInputBox(NULL, 1,255);
     _selectedIndex = 0;
     _itemCount = 0;
     _firstVisible = 1;
@@ -28,6 +29,9 @@ void MenuSystem::InitMenu(const char *const *page, int itemCount, int selectedIn
 
 
 int MenuSystem::ProcessMenu(int action) {
+
+    Serial.print("Waiting for input: ");
+    Serial.println(_inputBox.isWaitingForInput());
 
     if (!_inputBox.isWaitingForInput()) {
         if (action == ACTION_DOWN)
@@ -57,8 +61,10 @@ int MenuSystem::ProcessMenu(int action) {
                 ShowInputBox();
             }
         if (action == ACTION_SELECT) {
+            //we are done waiting for input and it's availble now.
             _inputBox.setWaitingForInput(false);
-            //return selected index, so that we return to previous selected menu. I
+            _inputBox.setInputAvailable(true);
+            //return selected index, so that we return to previous selected menu.
             return _selectedIndex;
         }
     }
@@ -95,7 +101,7 @@ void MenuSystem::ShowMenu() {
     qmd.Finish();
 }
 
-void MenuSystem::ShowInputBox(char *title, int minValue, int maxValue) {
+void MenuSystem::ShowInputBox(const char *title, int minValue, int maxValue) {
     _inputBox.setWaitingForInput(true);
     _inputBox.setTitle(title);
     _inputBox.setMinValue(minValue);
@@ -105,12 +111,14 @@ void MenuSystem::ShowInputBox(char *title, int minValue, int maxValue) {
     ShowInputBox();
 }
 
-
 bool MenuSystem::inputAvailable() {
-    return _inputBox.isWaitingForInput();
+    //Should NOT be waiting for input and input should be available from inputbox.
+    return (!_inputBox.isWaitingForInput() && _inputBox.isInputAvailable());
 }
 
 int MenuSystem::getInput() {
+    //As input is retrieved, don't make it available anymore after that.
+    _inputBox.setInputAvailable(false);
     return _inputBox.getCurrentValue();
 }
 

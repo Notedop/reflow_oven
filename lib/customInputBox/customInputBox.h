@@ -1,11 +1,14 @@
-#ifndef customInputBox_h
-#define customInputBox_h
+#ifndef _CUSTOMINPUTBOX_H
+#define _CUSTOMINPUTBOX_H
 
 class customInputBox {
 
 public:
-    customInputBox();
-    customInputBox( char* input, int minValue, int maxValue);
+    customInputBox() {    };
+
+    customInputBox(char *input, int minValue, int maxValue) : _minValue(minValue), _maxValue(maxValue),
+                                                              _currentValue(minValue), _waitingForInput(false),
+                                                              _inputAvailable(false), _title(input) {};
 
     int getMinValue() const;
 
@@ -19,11 +22,15 @@ public:
 
     void setCurrentValue(int currentValue);
 
-    bool isWaitingForInput() ;
+    bool isWaitingForInput();
 
     void setWaitingForInput(bool waitingForInput);
 
-    void setTitle(char *string);
+    void setTitle(const char* string);
+
+    bool isInputAvailable() const;
+
+    void setInputAvailable(bool inputAvailable);
 
 private:
 
@@ -31,7 +38,8 @@ private:
     int _maxValue;
     int _currentValue;
     bool _waitingForInput;
-    char* _title;
+    bool _inputAvailable;
+    const char* _title;
 };
 
 #endif //TESTPROJECT_INPUTBOX_H

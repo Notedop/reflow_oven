@@ -1,17 +1,4 @@
-
-
 #include "customInputBox.h"
-
-customInputBox::customInputBox( char* input, int minValue, int maxValue) {
-    _minValue = minValue;
-    _maxValue = maxValue;
-    _currentValue = minValue;
-    _waitingForInput = false;
-    _title = input;
-}
-
-customInputBox::customInputBox() {
-};
 
 int customInputBox::getMinValue() const {
     return _minValue;
@@ -38,16 +25,24 @@ void customInputBox::setCurrentValue(int currentValue) {
 }
 
 bool customInputBox::isWaitingForInput()  {
-    return false;
+    return _waitingForInput;
 }
 
 void customInputBox::setWaitingForInput(bool waitingForInput) {
     _waitingForInput = waitingForInput;
 }
 
-void customInputBox::setTitle(char *string) {
+void customInputBox::setTitle(const char *string) {
 
     _title=string;
 
+}
+
+bool customInputBox::isInputAvailable() const {
+    return _inputAvailable;
+}
+
+void customInputBox::setInputAvailable(bool inputAvailable) {
+    _inputAvailable = inputAvailable;
 }
 

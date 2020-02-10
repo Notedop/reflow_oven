@@ -32,7 +32,7 @@ class MenuSystem
     const char * const * CurrentMenu;
     bool inputAvailable();
     int getInput();
-    void ShowInputBox(char *title, int minValue, int maxValue);
+    void ShowInputBox(const char *title, int minValue, int maxValue);
 
 private:
     void ShowInputBox();
@@ -41,7 +41,7 @@ private:
     int _firstVisible;
     char tempBuffer[32];
     MenuDisplay qmd;
-    customInputBox _inputBox = customInputBox("Test", 1,20);
+    customInputBox _inputBox;
 
 };
 

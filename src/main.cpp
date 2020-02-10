@@ -10,6 +10,7 @@
 
 MAX6675 temp_sensor;
 Adafruit_SSD1306 display(128, 64, OLED_MOSI, OLED_CLK, OLED_DC, OLED_RESET, OLED_CS);
+MenuSystem menu;
 Encoder encoder(encoder0PinA, encoder0PinB, encoder0Button);
 
 char Celsius_C[8];
@@ -24,7 +25,7 @@ unsigned long debounceDelay = 50;
 uint16_t intervalSensorRead = 10000;
 uint32_t tempMillis = 0;
 
-MenuSystem menu;
+
 
 void doEncoderScroll() {
     encoder.update();
@@ -89,18 +90,18 @@ void loop() {
     int clickedItem = 0;
 
     if (encoder.getPosition() >= 2) {
-        Serial.println("ACTON_DOWN");
+        Serial.println(F("ACTON_DOWN"));
         menu.ProcessMenu(ACTION_DOWN);
         encoder.setPosition(0); //reset the position
 
     } else if (encoder.getPosition() <= -2) {
-        Serial.println("ACTION_UP");
+        Serial.println(F("ACTION_UP"));
         menu.ProcessMenu(ACTION_UP);
         encoder.setPosition(0); //reset the position
     } else if (encoder.getClicked()) {
-        Serial.println("ACTION_SELECT");
+        Serial.println(F("ACTION_SELECT"));
         clickedItem = menu.ProcessMenu(ACTION_SELECT);
-        Serial.print("ClickedItem:");
+        Serial.print(F("ClickedItem:"));
         Serial.println(clickedItem);
         encoder.resetClicked(); //reset the position
     }
@@ -127,11 +128,13 @@ void loop() {
             switch (clickedItem) {
                 case 1:
                     if (menu.inputAvailable()) {
-                        Serial.print("received following input");
+                        Serial.print(F("received following input"));
                         Serial.println(menu.getInput());
+                        menu.InitMenu(mnuSubmenu1, cntSubmenu1, 1);
                     } else {
                         menu.ShowInputBox("Input 1", 0, 255);
                     }
+                    break;
                 case 2:
                 case 3:
                 case 4:
