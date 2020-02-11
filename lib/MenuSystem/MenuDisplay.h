@@ -2,9 +2,12 @@
 #ifndef Q_MENU_DISPLAY_H
 #define Q_MENU_DISPLAY_H
 
-#include <Adafruit_GFX.h>
-#include <Adafruit_SSD1306.h>
-#include "../customInputBox/customInputBox.h"
+#ifndef _ADAFRUIT_GFX_H
+    #include <Adafruit_SSD1306.h>
+    #include <Adafruit_GFX.h>
+#endif
+
+#include "customInputBox/customInputBox.h"
 
 class MenuDisplay {
 public:
@@ -25,6 +28,9 @@ public:
     // void MessageBox(const char text[]);
     //    char tempBuffer[32];
     void ShowInputBox(customInputBox inputBox);
+
+private:
+    Adafruit_SSD1306 * disp;
 };
 
 

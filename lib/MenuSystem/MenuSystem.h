@@ -9,7 +9,7 @@
 #ifndef MenuSystem_h
 #define MenuSystem_h
 
-#include <Adafruit_SSD1306.h>
+//#include <Adafruit_SSD1306.h>
 #include "MenuDisplay.h"
 #include "customInputBox/customInputBox.h"
 

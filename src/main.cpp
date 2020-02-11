@@ -26,7 +26,6 @@ uint16_t intervalSensorRead = 10000;
 uint32_t tempMillis = 0;
 
 
-
 void doEncoderScroll() {
     encoder.update();
     //Serial.println(encoder.getPosition());
@@ -110,67 +109,73 @@ void loop() {
         // Logic for Root menu
         if (menu.CurrentMenu == mnuRoot)
             switch (clickedItem) {
-                case 1:
-                    menu.InitMenu(mnuSubmenu1, cntSubmenu1, 1);
+                case 1: //Profiles
+                    menu.InitMenu(mnuSubProfiles, cntSubProfiles, 1);
                     break;
                 case 2:
-                    menu.InitMenu(mnuSubmenu2, cntSubmenu2, 1);
+
                     break;
                 case 3:
-                    menu.InitMenu(mnuSubmenu3, cntSubmenu3, 1);
+
                     break;
                 case 4:
                     // menu.MessageBox("Some message!");
                     break;
             }
-            // Logic for Submenu 1
-        else if (menu.CurrentMenu == mnuSubmenu1)
+            // Logic for Profiles submenu
+        else if (menu.CurrentMenu == mnuSubProfiles) // Root --> Profiles
             switch (clickedItem) {
-                case 1:
+                case 1: //Root --> Profiles --> New profile
+                    menu.InitMenu(mnuSubNewProfile, cntSubNewProfile, 1);
+                    break;
+                case 2: //Root --> Profiles -->Existing profile
+                    break;
+                case 3: //Root --> Profiles -->Back
+                    menu.InitMenu(mnuRoot, cntRoot, 1);
+                    break;
+            }
+        else if (menu.CurrentMenu == mnuSubNewProfile) //Root --> Profiles --> New profile
+            switch (clickedItem) {
+                case 1: //Root --> Profiles --> New profile --> Profile #
+                    //logic for inputbox call:
                     if (menu.inputAvailable()) {
                         Serial.print(F("received following input"));
                         Serial.println(menu.getInput());
-                        menu.InitMenu(mnuSubmenu1, cntSubmenu1, 1);
+                        menu.InitMenu(mnuSubNewProfile, cntSubNewProfile, 1);
                     } else {
                         menu.ShowInputBox("Input 1", 0, 255);
                     }
                     break;
-                case 2:
-                case 3:
-                case 4:
-                case 5:
-                    // menu.MessageBox("Item clicked");
+                case 2: //Pre-heat
+                    menu.InitMenu(mnuSubPreheat, cntSubPreheat, 1);
                     break;
-                case 6:
-                    menu.InitMenu(mnuRoot, cntRoot, 1);
+                case 3: //Soak
+                    menu.InitMenu(mnuSubSoak, cntSubSoak, 1);
                     break;
-            }
-            // Logic for Submenu 2
-        else if (menu.CurrentMenu == mnuSubmenu2)
-            switch (clickedItem) {
-                case 1:
-                    // menu.MessageBox("On");
+                case 4: //Reflow
+                    menu.InitMenu(mnuSubReflow, cntSubReflow, 1);
                     break;
-                case 2:
-                    // menu.MessageBox("Off");
+                case 5: //Cool
+                    menu.InitMenu(mnuSubCool, cntSubCool, 1);
                     break;
-                case 3:
-                    menu.InitMenu(mnuRoot, cntRoot, 2);
+                case 6: //Save
+                    break;
+                case 7: //Start
+                    break;
+                case 8: //Back to mnuSubProfiles
+                    menu.InitMenu(mnuSubProfiles, cntSubProfiles, 1);
                     break;
             }
-            // Logic for Submenu 3
-        else if (menu.CurrentMenu == mnuSubmenu3)
-            switch (clickedItem) {
-                case 1:
-                    // menu.MessageBox("Enabled");
-                    break;
-                case 2:
-                    //menu.MessageBox("Disabled");
-                    break;
-                case 3:
-                    menu.InitMenu(mnuRoot, cntRoot, 3);
-                    break;
-            }
+
+        //logic for inputbox call:
+        //        if (menu.inputAvailable()) {
+        //            Serial.print(F("received following input"));
+        //            Serial.println(menu.getInput());
+        //            menu.InitMenu(mnuSubProfiles, cntSubProfiles, 1);
+        //        } else {
+        //            menu.ShowInputBox("Input 1", 0, 255);
+        //        }
+        //        break;
 
     }
 }
