@@ -13,7 +13,7 @@ MAX6675 temp_sensor;
 Adafruit_SSD1306 display(128, 64, OLED_MOSI, OLED_CLK, OLED_DC, OLED_RESET, OLED_CS);
 MenuSystem menu;
 Encoder encoder(encoder0PinA, encoder0PinB, encoder0Button);
-Profile activeProfile(0,0,0,0,0,0,0,0,0,0,0);
+Profile activeProfile(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 
 char Celsius_C[8];
 double Celcius_d;
@@ -26,6 +26,10 @@ unsigned long debounceDelay = 50;
 
 uint16_t intervalSensorRead = 10000;
 uint32_t tempMillis = 0;
+
+int minValue = 1;
+int maxValue = 3;
+int currentValue = activeProfile.getProfileNumber();
 
 
 void doEncoderScroll() {
@@ -128,7 +132,7 @@ void loop() {
         else if (menu.CurrentMenu == mnuSubProfiles) // Root --> Profiles
             switch (clickedItem) {
                 case 1: //Root --> Profiles --> New profile
-                    activeProfile = Profile(0,150,80,B00001000,180,60,B00101010,205,60,B00100010,50);
+                    activeProfile = Profile(1, 150, 80, B00001000, 180, 60, B00101010, 205, 60, B00100010, 50);
                     menu.InitMenu(mnuSubNewProfile, cntSubNewProfile, 1);
                     break;
                 case 2: //Root --> Profiles -->Existing profile
@@ -142,12 +146,13 @@ void loop() {
                 case 1: //Root --> Profiles --> New profile --> Profile #
                     //logic for inputbox call:
                     if (menu.inputAvailable()) {
-                        Serial.print(F("received following input"));
                         activeProfile.setProfileNumber(menu.getInput());
-                        Serial.println(activeProfile.getProfileNumber());
                         menu.InitMenu(mnuSubNewProfile, cntSubNewProfile, 1);
                     } else {
-                        menu.ShowInputBox("Input 1", 0, 255);
+                        minValue = 1;
+                        maxValue = 3;
+                        currentValue = activeProfile.getProfileNumber();
+                        menu.ShowInputBox("Profile #", minValue, maxValue, currentValue);
                     }
                     break;
                 case 2: //Pre-heat
@@ -163,6 +168,28 @@ void loop() {
                     menu.InitMenu(mnuSubCool, cntSubCool, 1);
                     break;
                 case 6: //Save
+//                    Serial.print("profileNumber: ");
+//                    Serial.println(activeProfile.getProfileNumber());
+//                    Serial.print("preHeatTargetTemp: ");
+//                    Serial.println(activeProfile.getPreHeatTargetTemp());
+//                    Serial.print(" preHeatMaxTime: ");
+//                    Serial.println(activeProfile.getPreHeatMaxTime());
+//                    Serial.print(" preHeatHeaters: ");
+//                    Serial.println(activeProfile.getPreHeatHeaters());
+//                    Serial.print(" soakTargetTemp: ");
+//                    Serial.println(activeProfile.getSoakTargetTemp());
+//                    Serial.print(" soakMaxTime: ");
+//                    Serial.println(activeProfile.getSoakMaxTime());
+//                    Serial.print(" soakHeaters: ");
+//                    Serial.println(activeProfile.getSoakHeaters());
+//                    Serial.print(" reflowTargetTemp: ");
+//                    Serial.println(activeProfile.getReflowTargetTemp());
+//                    Serial.print(" reflowMaxTime: ");
+//                    Serial.println(activeProfile.getReflowMaxTime());
+//                    Serial.print(" reflowHeaters: ");
+//                    Serial.println(activeProfile.getReflowHeaters());
+//                    Serial.print(" coolDownTargetTemp: ");
+//                    Serial.println(activeProfile.getCoolDownTargetTemp());
                     break;
                 case 7: //Start
                     break;
@@ -173,70 +200,118 @@ void loop() {
         else if (menu.CurrentMenu == mnuSubPreheat) //Root --> Profiles --> New profile --> Preheat
             switch (clickedItem) {
                 case 1: //target temp
-
+                    if (menu.inputAvailable()) {
+                        activeProfile.setPreHeatTargetTemp(menu.getInput());
+                        menu.InitMenu(mnuSubPreheat, cntSubPreheat, 1);
+                    } else {
+                        minValue = 20;
+                        maxValue = 220;
+                        currentValue = activeProfile.getPreHeatTargetTemp();
+                        menu.ShowInputBox("Preheat Target C*", minValue, maxValue, currentValue);
+                    }
                     break;
                 case 2: //Max time
-
+                    if (menu.inputAvailable()) {
+                        activeProfile.setPreHeatMaxTime(menu.getInput());
+                        menu.InitMenu(mnuSubPreheat, cntSubPreheat, 2);
+                    } else {
+                        minValue = 10;
+                        maxValue = 180;
+                        currentValue = activeProfile.getPreHeatMaxTime();
+                        menu.ShowInputBox("Preheat Target C*", minValue, maxValue, currentValue);
+                    }
                     break;
                 case 3: //Celcius/Second
+                    // do nothing
                     break;
                 case 4: // Heaters
+                    // create menu to define heaters
                     break;
                 case 5: // back to mnuSubNewProfile
-                    menu.InitMenu(mnuSubNewProfile, cntSubNewProfile, 1);
+                    menu.InitMenu(mnuSubNewProfile, cntSubNewProfile, 2);
                     break;
             }
         else if (menu.CurrentMenu == mnuSubSoak) //Root --> Profiles --> New profile --> Soak
             switch (clickedItem) {
                 case 1: //target temp
-
+                    if (menu.inputAvailable()) {
+                        activeProfile.setSoakTargetTemp(menu.getInput());
+                        menu.InitMenu(mnuSubSoak, cntSubSoak, 1);
+                    } else {
+                        minValue = 20;
+                        maxValue = 220;
+                        currentValue = activeProfile.getSoakTargetTemp();
+                        menu.ShowInputBox("Soak Target C*", minValue, maxValue, currentValue);
+                    }
                     break;
                 case 2: //Max time
-
+                    if (menu.inputAvailable()) {
+                        activeProfile.setSoakMaxTime(menu.getInput());
+                        menu.InitMenu(mnuSubSoak, cntSubSoak, 2);
+                    } else {
+                        minValue = 10;
+                        maxValue = 180;
+                        currentValue = activeProfile.getSoakMaxTime();
+                        menu.ShowInputBox("Preheat Target C*", minValue, maxValue, currentValue);
+                    }
                     break;
                 case 3: //Heaters
-
+                    //do nothing
                     break;
                 case 4: // back to mnuSubNewProfile
-                    menu.InitMenu(mnuSubNewProfile, cntSubNewProfile, 1);
+                    menu.InitMenu(mnuSubNewProfile, cntSubNewProfile, 3);
                     break;
             }
-        else if (menu.CurrentMenu == mnuSubReflow) //Root --> Profiles --> New profile --> Profile
+        else if (menu.CurrentMenu == mnuSubReflow) //Root --> Profiles --> New profile --> Reflow
             switch (clickedItem) {
                 case 1: //target temp
-
+                    if (menu.inputAvailable()) {
+                        activeProfile.setSoakTargetTemp(menu.getInput());
+                        menu.InitMenu(mnuSubReflow, cntSubReflow, 1);
+                    } else {
+                        minValue = 20;
+                        maxValue = 220;
+                        currentValue = activeProfile.getReflowTargetTemp();
+                        menu.ShowInputBox("Reflow Target C*", minValue, maxValue, currentValue);
+                    }
                     break;
                 case 2: //Max time
-
+                    if (menu.inputAvailable()) {
+                        activeProfile.setReflowMaxTime(menu.getInput());
+                        menu.InitMenu(mnuSubReflow, cntSubReflow, 2);
+                    } else {
+                        minValue = 10;
+                        maxValue = 180;
+                        currentValue = activeProfile.getReflowMaxTime();
+                        menu.ShowInputBox("Reflow Target C*", minValue, maxValue, currentValue);
+                    }
                     break;
                 case 3: //Celcius/Second
                     break;
                 case 4: // Heaters
                     break;
                 case 5: // back to mnuSubNewProfile
-                    menu.InitMenu(mnuSubNewProfile, cntSubNewProfile, 1);
+                    menu.InitMenu(mnuSubNewProfile, cntSubNewProfile, 4);
                     break;
             }
         else if (menu.CurrentMenu == mnuSubCool) //Root --> Profiles --> New profile --> Cooldown
             switch (clickedItem) {
                 case 1: //target temp
+                    if (menu.inputAvailable()) {
+                        activeProfile.setCoolDownTargetTemp(menu.getInput());
+                        menu.InitMenu(mnuSubCool, cntSubCool, 1);
+                    } else {
+                        minValue = 20;
+                        maxValue = 220;
+                        currentValue = activeProfile.getCoolDownTargetTemp();
+                        menu.ShowInputBox("Cool Target C*", minValue, maxValue, currentValue);
+                    }
+                    break;
                     break;
                 case 2: // back to mnuSubNewProfile
-                    menu.InitMenu(mnuSubNewProfile, cntSubNewProfile, 1);
+                    menu.InitMenu(mnuSubNewProfile, cntSubNewProfile, 5);
                     break;
             }
-
-
-        //logic for inputbox call:
-        //        if (menu.inputAvailable()) {
-        //            Serial.print(F("received following input"));
-        //            Serial.println(menu.getInput());
-        //            menu.InitMenu(mnuSubProfiles, cntSubProfiles, 1);
-        //        } else {
-        //            menu.ShowInputBox("Input 1", 0, 255);
-        //        }
-        //        break;
-
     }
 }
 
