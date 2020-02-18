@@ -101,12 +101,12 @@ void MenuSystem::ShowMenu() {
     qmd.Finish();
 }
 
-void MenuSystem::ShowInputBox(const char *title, int minValue, int maxValue) {
+void MenuSystem::ShowInputBox(const char *title, int &minValue, int &maxValue, int &currentValue) {
     _inputBox.setWaitingForInput(true);
     _inputBox.setTitle(title);
     _inputBox.setMinValue(minValue);
     _inputBox.setMaxValue(maxValue);
-    _inputBox.setCurrentValue(minValue);
+    _inputBox.setCurrentValue(currentValue);
 
     ShowInputBox();
 }
