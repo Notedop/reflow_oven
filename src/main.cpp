@@ -147,7 +147,7 @@ void loop() {
                     //logic for inputbox call:
                     if (menu.inputAvailable()) {
                         activeProfile.setProfileNumber(menu.getInput());
-                        menu.InitMenu(mnuSubNewProfile, cntSubNewProfile, 1);
+                        menu.InitMenu(mnuSubNewProfile, cntSubNewProfile, 2);
                     } else {
                         minValue = 1;
                         maxValue = 3;
@@ -202,7 +202,7 @@ void loop() {
                 case 1: //target temp
                     if (menu.inputAvailable()) {
                         activeProfile.setPreHeatTargetTemp(menu.getInput());
-                        menu.InitMenu(mnuSubPreheat, cntSubPreheat, 1);
+                        menu.InitMenu(mnuSubPreheat, cntSubPreheat, 2);
                     } else {
                         minValue = 20;
                         maxValue = 220;
@@ -213,7 +213,7 @@ void loop() {
                 case 2: //Max time
                     if (menu.inputAvailable()) {
                         activeProfile.setPreHeatMaxTime(menu.getInput());
-                        menu.InitMenu(mnuSubPreheat, cntSubPreheat, 2);
+                        menu.InitMenu(mnuSubPreheat, cntSubPreheat, 3);
                     } else {
                         minValue = 10;
                         maxValue = 180;
@@ -228,7 +228,7 @@ void loop() {
                     // create menu to define heaters
                     break;
                 case 5: // back to mnuSubNewProfile
-                    menu.InitMenu(mnuSubNewProfile, cntSubNewProfile, 2);
+                    menu.InitMenu(mnuSubNewProfile, cntSubNewProfile, 3);
                     break;
             }
         else if (menu.CurrentMenu == mnuSubSoak) //Root --> Profiles --> New profile --> Soak
@@ -236,7 +236,7 @@ void loop() {
                 case 1: //target temp
                     if (menu.inputAvailable()) {
                         activeProfile.setSoakTargetTemp(menu.getInput());
-                        menu.InitMenu(mnuSubSoak, cntSubSoak, 1);
+                        menu.InitMenu(mnuSubSoak, cntSubSoak, 2);
                     } else {
                         minValue = 20;
                         maxValue = 220;
@@ -247,7 +247,7 @@ void loop() {
                 case 2: //Max time
                     if (menu.inputAvailable()) {
                         activeProfile.setSoakMaxTime(menu.getInput());
-                        menu.InitMenu(mnuSubSoak, cntSubSoak, 2);
+                        menu.InitMenu(mnuSubSoak, cntSubSoak, 3);
                     } else {
                         minValue = 10;
                         maxValue = 180;
@@ -259,7 +259,7 @@ void loop() {
                     //do nothing
                     break;
                 case 4: // back to mnuSubNewProfile
-                    menu.InitMenu(mnuSubNewProfile, cntSubNewProfile, 3);
+                    menu.InitMenu(mnuSubNewProfile, cntSubNewProfile, 4);
                     break;
             }
         else if (menu.CurrentMenu == mnuSubReflow) //Root --> Profiles --> New profile --> Reflow
@@ -267,7 +267,7 @@ void loop() {
                 case 1: //target temp
                     if (menu.inputAvailable()) {
                         activeProfile.setSoakTargetTemp(menu.getInput());
-                        menu.InitMenu(mnuSubReflow, cntSubReflow, 1);
+                        menu.InitMenu(mnuSubReflow, cntSubReflow, 2);
                     } else {
                         minValue = 20;
                         maxValue = 220;
@@ -278,7 +278,7 @@ void loop() {
                 case 2: //Max time
                     if (menu.inputAvailable()) {
                         activeProfile.setReflowMaxTime(menu.getInput());
-                        menu.InitMenu(mnuSubReflow, cntSubReflow, 2);
+                        menu.InitMenu(mnuSubReflow, cntSubReflow, 3);
                     } else {
                         minValue = 10;
                         maxValue = 180;
@@ -291,7 +291,7 @@ void loop() {
                 case 4: // Heaters
                     break;
                 case 5: // back to mnuSubNewProfile
-                    menu.InitMenu(mnuSubNewProfile, cntSubNewProfile, 4);
+                    menu.InitMenu(mnuSubNewProfile, cntSubNewProfile, 5);
                     break;
             }
         else if (menu.CurrentMenu == mnuSubCool) //Root --> Profiles --> New profile --> Cooldown
@@ -299,7 +299,7 @@ void loop() {
                 case 1: //target temp
                     if (menu.inputAvailable()) {
                         activeProfile.setCoolDownTargetTemp(menu.getInput());
-                        menu.InitMenu(mnuSubCool, cntSubCool, 1);
+                        menu.InitMenu(mnuSubCool, cntSubCool, 2);
                     } else {
                         minValue = 20;
                         maxValue = 220;
@@ -309,7 +309,7 @@ void loop() {
                     break;
                     break;
                 case 2: // back to mnuSubNewProfile
-                    menu.InitMenu(mnuSubNewProfile, cntSubNewProfile, 5);
+                    menu.InitMenu(mnuSubNewProfile, cntSubNewProfile, 6);
                     break;
             }
     }
