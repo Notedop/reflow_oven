@@ -126,6 +126,7 @@ void loop() {
         else if (menu.CurrentMenu == mnuSubProfiles) // Root --> Profiles
             switch (clickedItem) {
                 case 1: //Root --> Profiles --> New profile
+                    activeProfile = Profile(0,150,80,B00001000,180,60,B00101010,205,60,B00100010,50);
                     menu.InitMenu(mnuSubNewProfile, cntSubNewProfile, 1);
                     break;
                 case 2: //Root --> Profiles -->Existing profile
@@ -166,6 +167,62 @@ void loop() {
                     menu.InitMenu(mnuSubProfiles, cntSubProfiles, 1);
                     break;
             }
+        else if (menu.CurrentMenu == mnuSubPreheat) //Root --> Profiles --> New profile --> Preheat
+            switch (clickedItem) {
+                case 1: //target temp
+
+                    break;
+                case 2: //Max time
+
+                    break;
+                case 3: //Celcius/Second
+                    break;
+                case 4: // Heaters
+                    break;
+                case 5: // back to mnuSubNewProfile
+                    menu.InitMenu(mnuSubNewProfile, cntSubNewProfile, 1);
+                    break;
+            }
+        else if (menu.CurrentMenu == mnuSubSoak) //Root --> Profiles --> New profile --> Soak
+            switch (clickedItem) {
+                case 1: //target temp
+
+                    break;
+                case 2: //Max time
+
+                    break;
+                case 3: //Heaters
+
+                    break;
+                case 4: // back to mnuSubNewProfile
+                    menu.InitMenu(mnuSubNewProfile, cntSubNewProfile, 1);
+                    break;
+            }
+        else if (menu.CurrentMenu == mnuSubReflow) //Root --> Profiles --> New profile --> Profile
+            switch (clickedItem) {
+                case 1: //target temp
+
+                    break;
+                case 2: //Max time
+
+                    break;
+                case 3: //Celcius/Second
+                    break;
+                case 4: // Heaters
+                    break;
+                case 5: // back to mnuSubNewProfile
+                    menu.InitMenu(mnuSubNewProfile, cntSubNewProfile, 1);
+                    break;
+            }
+        else if (menu.CurrentMenu == mnuSubCool) //Root --> Profiles --> New profile --> Cooldown
+            switch (clickedItem) {
+                case 1: //target temp
+                    break;
+                case 2: // back to mnuSubNewProfile
+                    menu.InitMenu(mnuSubNewProfile, cntSubNewProfile, 1);
+                    break;
+            }
+
 
         //logic for inputbox call:
         //        if (menu.inputAvailable()) {
