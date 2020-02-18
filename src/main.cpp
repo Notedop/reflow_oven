@@ -7,11 +7,13 @@
 #include <MenuDisplay.h>
 #include <MenuSystem.h>
 #include "menu.h"
+#include <Profile.h>
 
 MAX6675 temp_sensor;
 Adafruit_SSD1306 display(128, 64, OLED_MOSI, OLED_CLK, OLED_DC, OLED_RESET, OLED_CS);
 MenuSystem menu;
 Encoder encoder(encoder0PinA, encoder0PinB, encoder0Button);
+Profile activeProfile(0,0,0,0,0,0,0,0,0,0,0);
 
 char Celsius_C[8];
 double Celcius_d;
@@ -141,7 +143,8 @@ void loop() {
                     //logic for inputbox call:
                     if (menu.inputAvailable()) {
                         Serial.print(F("received following input"));
-                        Serial.println(menu.getInput());
+                        activeProfile.setProfileNumber(menu.getInput());
+                        Serial.println(activeProfile.getProfileNumber());
                         menu.InitMenu(mnuSubNewProfile, cntSubNewProfile, 1);
                     } else {
                         menu.ShowInputBox("Input 1", 0, 255);
