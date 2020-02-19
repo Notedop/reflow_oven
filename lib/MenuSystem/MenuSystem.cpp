@@ -30,8 +30,8 @@ void MenuSystem::InitMenu(const char *const *page, int itemCount, int selectedIn
 
 int MenuSystem::ProcessMenu(int action) {
 
-    Serial.print("Waiting for input: ");
-    Serial.println(_inputBox.isWaitingForInput());
+    //Serial.print("Waiting for input: ");
+   // Serial.println(_inputBox.isWaitingForInput());
 
     if (!_inputBox.isWaitingForInput()) {
         if (action == ACTION_DOWN)
@@ -81,7 +81,7 @@ void MenuSystem::ShowMenu() {
 
     // display title
     strcpy_P(tempBuffer, (char *) pgm_read_word(&(CurrentMenu[0])));
-    Serial.println(tempBuffer);
+    //Serial.println(tempBuffer);
     qmd.Title(tempBuffer);
 
     // display items

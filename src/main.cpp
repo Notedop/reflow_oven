@@ -8,12 +8,14 @@
 #include <MenuSystem.h>
 #include "menu.h"
 #include <Profile.h>
+#include <ReflowController.h>
 
 MAX6675 temp_sensor;
 Adafruit_SSD1306 display(128, 64, OLED_MOSI, OLED_CLK, OLED_DC, OLED_RESET, OLED_CS);
 MenuSystem menu;
 Encoder encoder(encoder0PinA, encoder0PinB, encoder0Button);
 Profile activeProfile(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+
 
 char Celsius_C[8];
 double Celcius_d;
@@ -52,15 +54,15 @@ void setup() {
     pinMode(HEAT_PIN, OUTPUT);
     digitalWrite(HEAT_PIN, LOW);
 
-    Serial.begin(9600);
-    Serial.println("start");
+    //Serial.begin(9600);
+    //Serial.println("start");
     temp_sensor.begin(thermoCLK, thermoCS, thermoDO);
 
     attachInterrupt(1, doEncoderScroll, CHANGE);  // encoder pin on interrupt 1 - pin 3
     attachInterrupt(0, doEncoderClick, LOW); //
     menu = MenuSystem(&display);
     menu.InitMenu(mnuRoot, cntRoot, 1);
-    Serial.println("end");
+   //Serial.println("end");
 
 }
 
@@ -95,7 +97,7 @@ void loop() {
     int clickedItem = 0;
 
     if (encoder.getPosition() >= 2) {
-        Serial.println(F("ACTON_DOWN"));
+        //Serial.println(F("ACTON_DOWN"));
         menu.ProcessMenu(ACTION_DOWN);
         encoder.setPosition(0); //reset the position
 
@@ -104,10 +106,10 @@ void loop() {
         menu.ProcessMenu(ACTION_UP);
         encoder.setPosition(0); //reset the position
     } else if (encoder.getClicked()) {
-        Serial.println(F("ACTION_SELECT"));
+        //Serial.println(F("ACTION_SELECT"));
         clickedItem = menu.ProcessMenu(ACTION_SELECT);
-        Serial.print(F("ClickedItem:"));
-        Serial.println(clickedItem);
+        //Serial.print(F("ClickedItem:"));
+        //Serial.println(clickedItem);
         encoder.resetClicked(); //reset the position
     }
 
@@ -192,6 +194,10 @@ void loop() {
 //                    Serial.println(activeProfile.getCoolDownTargetTemp());
                     break;
                 case 7: //Start
+                    {
+                        ReflowController controller(menu, temp_sensor, activeProfile);
+                        controller.Start();
+                    }
                     break;
                 case 8: //Back to mnuSubProfiles
                     menu.InitMenu(mnuSubProfiles, cntSubProfiles, 1);
@@ -218,7 +224,7 @@ void loop() {
                         minValue = 10;
                         maxValue = 180;
                         currentValue = activeProfile.getPreHeatMaxTime();
-                        menu.ShowInputBox("Preheat Target C*", minValue, maxValue, currentValue);
+                        menu.ShowInputBox("Preheat Max time", minValue, maxValue, currentValue);
                     }
                     break;
                 case 3: //Celcius/Second
@@ -252,7 +258,7 @@ void loop() {
                         minValue = 10;
                         maxValue = 180;
                         currentValue = activeProfile.getSoakMaxTime();
-                        menu.ShowInputBox("Preheat Target C*", minValue, maxValue, currentValue);
+                        menu.ShowInputBox("Soak Max time", minValue, maxValue, currentValue);
                     }
                     break;
                 case 3: //Heaters
@@ -283,7 +289,7 @@ void loop() {
                         minValue = 10;
                         maxValue = 180;
                         currentValue = activeProfile.getReflowMaxTime();
-                        menu.ShowInputBox("Reflow Target C*", minValue, maxValue, currentValue);
+                        menu.ShowInputBox("Reflow max time", minValue, maxValue, currentValue);
                     }
                     break;
                 case 3: //Celcius/Second
@@ -318,7 +324,7 @@ void loop() {
 void doChart() {
     Celcius_d = temp_sensor.readCelsius();
     dtostrf(Celcius_d, 4, 2, Celsius_C);
-    Serial.println(Celsius_C);
+    //Serial.println(Celsius_C);
     display.clearDisplay();
 
     if (Celcius_d > 235.0) {
@@ -344,3 +350,4 @@ void doChart() {
     //chartPos=rand();
     delay(1000);
 }
+

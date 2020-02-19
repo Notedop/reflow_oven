@@ -6,8 +6,8 @@ MenuDisplay::MenuDisplay()
 }
 
 MenuDisplay::MenuDisplay(Adafruit_SSD1306 *disp) {
-    Serial.begin(9600);
-    Serial.println(F("constructor menudisplay"));
+    //Serial.begin(9600);
+    //Serial.println(F("constructor menudisplay"));
     this->disp = disp;
     disp->begin();
     disp->setTextColor(WHITE);
