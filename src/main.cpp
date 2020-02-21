@@ -233,9 +233,11 @@ void loop() {
                     break;
                 case 3: //Celcius/Second
                     // do nothing
+                    menu.InitMenu(mnuSubPreheat, cntSubPreheat, 4);
                     break;
                 case 4: // Heaters
                     // create menu to define heaters
+                    menu.InitMenu(mnuSubPreheat, cntSubPreheat, 5);
                     break;
                 case 5: // back to mnuSubNewProfile
                     menu.InitMenu(mnuSubNewProfile, cntSubNewProfile, 3);
@@ -266,7 +268,7 @@ void loop() {
                     }
                     break;
                 case 3: //Heaters
-                    //do nothing
+                    menu.InitMenu(mnuSubSoak, cntSubSoak, 4);
                     break;
                 case 4: // back to mnuSubNewProfile
                     menu.InitMenu(mnuSubNewProfile, cntSubNewProfile, 4);
@@ -297,8 +299,10 @@ void loop() {
                     }
                     break;
                 case 3: //Celcius/Second
+                    menu.InitMenu(mnuSubReflow, cntSubReflow, 4);
                     break;
                 case 4: // Heaters
+                    menu.InitMenu(mnuSubReflow, cntSubReflow, 5);
                     break;
                 case 5: // back to mnuSubNewProfile
                     menu.InitMenu(mnuSubNewProfile, cntSubNewProfile, 5);
@@ -316,7 +320,6 @@ void loop() {
                         currentValue = activeProfile.getCoolDownTargetTemp();
                         menu.ShowInputBox("Cool Target C*", minValue, maxValue, currentValue);
                     }
-                    break;
                     break;
                 case 2: // back to mnuSubNewProfile
                     menu.InitMenu(mnuSubNewProfile, cntSubNewProfile, 6);
