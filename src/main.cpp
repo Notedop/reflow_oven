@@ -91,6 +91,31 @@ void addNewValue(uint8_t value) {
     temperatureHistory[numberOfReads - 1] = value;
 }
 
+void printActiveProfile() {
+    Serial.print("profileNumber: ");
+    Serial.println(activeProfile.getProfileNumber());
+    Serial.print("preHeatTargetTemp: ");
+    Serial.println(activeProfile.getPreHeatTargetTemp());
+    Serial.print(" preHeatMaxTime: ");
+    Serial.println(activeProfile.getPreHeatMaxTime());
+    Serial.print(" preHeatHeaters: ");
+    Serial.println(activeProfile.getPreHeatHeaters());
+    Serial.print(" soakTargetTemp: ");
+    Serial.println(activeProfile.getSoakTargetTemp());
+    Serial.print(" soakMaxTime: ");
+    Serial.println(activeProfile.getSoakMaxTime());
+    Serial.print(" soakHeaters: ");
+    Serial.println(activeProfile.getSoakHeaters());
+    Serial.print(" reflowTargetTemp: ");
+    Serial.println(activeProfile.getReflowTargetTemp());
+    Serial.print(" reflowMaxTime: ");
+    Serial.println(activeProfile.getReflowMaxTime());
+    Serial.print(" reflowHeaters: ");
+    Serial.println(activeProfile.getReflowHeaters());
+    Serial.print(" coolDownTargetTemp: ");
+    Serial.println(activeProfile.getCoolDownTargetTemp());
+}
+
 void loop() {
 
     int clickedItem = 0;
@@ -139,21 +164,31 @@ void loop() {
             switch (clickedItem) {
                 case 1: //Root --> Profiles --> New profile
                     activeProfile = Profile(1, 150, 80, B00001000, 180, 60, B00101010, 205, 60, B00100010, 50);
-                    menu.InitMenu(mnuSubNewProfile, cntSubNewProfile, 1);
+                    menu.InitMenu(mnuSubEditProfile, cntSubEditProfile, 1);
                     break;
-                case 2: //Root --> Profiles -->Existing profile
+                case 2: //Root --> Profiles -->Existing profile 1
+                    activeProfile.loadProfile(1);
+                    menu.InitMenu(mnuSubProfile1, cntSubProfile1, 1);
                     break;
-                case 3: //Root --> Profiles -->Back
+                case 3: //Root --> Profiles -->Existing profile 2
+                    activeProfile.loadProfile(2);
+                    menu.InitMenu(mnuSubProfile2, cntSubProfile2, 1);
+                    break;
+                case 4: //Root --> Profiles -->Existing profile 3
+                    activeProfile.loadProfile(3);
+                    menu.InitMenu(mnuSubProfile3, cntSubProfile3, 1);
+                    break;
+                case 5: //Root --> Profiles -->Back
                     menu.InitMenu(mnuRoot, cntRoot, 1);
                     break;
             }
-        else if (menu.CurrentMenu == mnuSubNewProfile) //Root --> Profiles --> New profile
+        else if (menu.CurrentMenu == mnuSubEditProfile) //Root --> Profiles --> New profile
             switch (clickedItem) {
                 case 1: //Root --> Profiles --> New profile --> Profile #
                     //logic for inputbox call:
                     if (menu.inputAvailable()) {
                         activeProfile.setProfileNumber(menu.getInput());
-                        menu.InitMenu(mnuSubNewProfile, cntSubNewProfile, 2);
+                        menu.InitMenu(mnuSubEditProfile, cntSubEditProfile, 2);
                     } else {
                         minValue = 1;
                         maxValue = 3;
@@ -173,32 +208,13 @@ void loop() {
                 case 5: //Cool
                     menu.InitMenu(mnuSubCool, cntSubCool, 1);
                     break;
-                case 6: //Save
-//                    Serial.print("profileNumber: ");
-//                    Serial.println(activeProfile.getProfileNumber());
-//                    Serial.print("preHeatTargetTemp: ");
-//                    Serial.println(activeProfile.getPreHeatTargetTemp());
-//                    Serial.print(" preHeatMaxTime: ");
-//                    Serial.println(activeProfile.getPreHeatMaxTime());
-//                    Serial.print(" preHeatHeaters: ");
-//                    Serial.println(activeProfile.getPreHeatHeaters());
-//                    Serial.print(" soakTargetTemp: ");
-//                    Serial.println(activeProfile.getSoakTargetTemp());
-//                    Serial.print(" soakMaxTime: ");
-//                    Serial.println(activeProfile.getSoakMaxTime());
-//                    Serial.print(" soakHeaters: ");
-//                    Serial.println(activeProfile.getSoakHeaters());
-//                    Serial.print(" reflowTargetTemp: ");
-//                    Serial.println(activeProfile.getReflowTargetTemp());
-//                    Serial.print(" reflowMaxTime: ");
-//                    Serial.println(activeProfile.getReflowMaxTime());
-//                    Serial.print(" reflowHeaters: ");
-//                    Serial.println(activeProfile.getReflowHeaters());
-//                    Serial.print(" coolDownTargetTemp: ");
-//                    Serial.println(activeProfile.getCoolDownTargetTemp());
+                case 6:
+                    activeProfile.save();
+                    printActiveProfile();
                     break;
                 case 7: //Start
                     {
+                        activeProfile.loadProfile(2);
 //                        ReflowController controller(menu, temp_sensor, activeProfile);
 //                        controller.Start();
                     }
@@ -239,8 +255,8 @@ void loop() {
                     // create menu to define heaters
                     menu.InitMenu(mnuSubPreheat, cntSubPreheat, 5);
                     break;
-                case 5: // back to mnuSubNewProfile
-                    menu.InitMenu(mnuSubNewProfile, cntSubNewProfile, 3);
+                case 5: // back to mnuSubEditProfile
+                    menu.InitMenu(mnuSubEditProfile, cntSubEditProfile, 3);
                     break;
             }
         else if (menu.CurrentMenu == mnuSubSoak) //Root --> Profiles --> New profile --> Soak
@@ -270,8 +286,8 @@ void loop() {
                 case 3: //Heaters
                     menu.InitMenu(mnuSubSoak, cntSubSoak, 4);
                     break;
-                case 4: // back to mnuSubNewProfile
-                    menu.InitMenu(mnuSubNewProfile, cntSubNewProfile, 4);
+                case 4: // back to mnuSubEditProfile
+                    menu.InitMenu(mnuSubEditProfile, cntSubEditProfile, 4);
                     break;
             }
         else if (menu.CurrentMenu == mnuSubReflow) //Root --> Profiles --> New profile --> Reflow
@@ -304,8 +320,8 @@ void loop() {
                 case 4: // Heaters
                     menu.InitMenu(mnuSubReflow, cntSubReflow, 5);
                     break;
-                case 5: // back to mnuSubNewProfile
-                    menu.InitMenu(mnuSubNewProfile, cntSubNewProfile, 5);
+                case 5: // back to mnuSubEditProfile
+                    menu.InitMenu(mnuSubEditProfile, cntSubEditProfile, 5);
                     break;
             }
         else if (menu.CurrentMenu == mnuSubCool) //Root --> Profiles --> New profile --> Cooldown
@@ -321,9 +337,46 @@ void loop() {
                         menu.ShowInputBox("Cool Target C*", minValue, maxValue, currentValue);
                     }
                     break;
-                case 2: // back to mnuSubNewProfile
-                    menu.InitMenu(mnuSubNewProfile, cntSubNewProfile, 6);
+                case 2: // back to mnuSubEditProfile
+                    menu.InitMenu(mnuSubEditProfile, cntSubEditProfile, 6);
                     break;
+            }
+        else if (menu.CurrentMenu == mnuSubProfile1)
+            switch (clickedItem) {
+                case 1: //edit
+                    menu.InitMenu(mnuSubEditProfile, cntSubEditProfile, 1);
+                    break;
+                case 2: //start
+                    printActiveProfile();
+                    break;
+                case 3:
+                    menu.InitMenu(mnuSubProfiles, cntSubProfiles, 2);
+                    break;
+            }
+        else if (menu.CurrentMenu == mnuSubProfile2)
+            switch (clickedItem) {
+                case 1:
+                    menu.InitMenu(mnuSubEditProfile, cntSubEditProfile, 1);
+                    break;
+                case 2:
+                    printActiveProfile();
+                    break;
+                case 3:
+                    menu.InitMenu(mnuSubProfiles, cntSubProfiles, 3);
+                    break;
+            }
+        else if (menu.CurrentMenu == mnuSubProfile3)
+            switch (clickedItem) {
+                case 1:
+                    menu.InitMenu(mnuSubEditProfile, cntSubEditProfile, 1);
+                    break;
+                case 2:
+                    printActiveProfile();
+                    break;
+                case 3:
+                    menu.InitMenu(mnuSubProfiles, cntSubProfiles, 4);
+                    break;
+
             }
     }
 }

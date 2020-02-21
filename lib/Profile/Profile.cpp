@@ -2,104 +2,138 @@
 // Created by Raoul on 18/02/2020.
 //
 
+#include <EEPROM.h>
 #include "Profile.h"
 
-unsigned char Profile::getPreHeatTargetTemp() const {
+byte Profile::getPreHeatTargetTemp() const {
     return preHeatTargetTemp;
 }
 
-void Profile::setPreHeatTargetTemp(unsigned char preHeatTargetTemp) {
-    Profile::preHeatTargetTemp = preHeatTargetTemp;
+void Profile::setPreHeatTargetTemp(byte targetTemp) {
+    Profile::preHeatTargetTemp = targetTemp;
 }
 
-unsigned char Profile::getPreHeatMaxTime() const {
+byte Profile::getPreHeatMaxTime() const {
     return preHeatMaxTime;
 }
 
-void Profile::setPreHeatMaxTime(unsigned char preHeatMaxTime) {
-    Profile::preHeatMaxTime = preHeatMaxTime;
+void Profile::setPreHeatMaxTime(byte maxTime) {
+    Profile::preHeatMaxTime = maxTime;
 }
 
-unsigned char Profile::getPreHeatHeaters() const {
+byte Profile::getPreHeatHeaters() const {
     return preHeatHeaters;
 }
 
-void Profile::setPreHeatHeaters(unsigned char preHeatHeaters) {
-    Profile::preHeatHeaters = preHeatHeaters;
+void Profile::setPreHeatHeaters(byte heaters) {
+    Profile::preHeatHeaters = heaters;
 }
 
-unsigned char Profile::getSoakTargetTemp() const {
+byte Profile::getSoakTargetTemp() const {
     return soakTargetTemp;
 }
 
-void Profile::setSoakTargetTemp(unsigned char soakTargetTemp) {
-    Profile::soakTargetTemp = soakTargetTemp;
+void Profile::setSoakTargetTemp(byte targetTemp) {
+    Profile::soakTargetTemp = targetTemp;
 }
 
-unsigned char Profile::getSoakMaxTime() const {
+byte Profile::getSoakMaxTime() const {
     return soakMaxTime;
 }
 
-void Profile::setSoakMaxTime(unsigned char soakMaxTime) {
-    Profile::soakMaxTime = soakMaxTime;
+void Profile::setSoakMaxTime(byte maxTime) {
+    Profile::soakMaxTime = maxTime;
 }
 
-unsigned char Profile::getSoakHeaters() const {
+byte Profile::getSoakHeaters() const {
     return soakHeaters;
 }
 
-void Profile::setSoakHeaters(unsigned char soakHeaters) {
-    Profile::soakHeaters = soakHeaters;
+void Profile::setSoakHeaters(byte heaters) {
+    Profile::soakHeaters = heaters;
 }
 
-unsigned char Profile::getReflowTargetTemp() const {
+byte Profile::getReflowTargetTemp() const {
     return reflowTargetTemp;
 }
 
-void Profile::setReflowTargetTemp(unsigned char reflowTargetTemp) {
-    Profile::reflowTargetTemp = reflowTargetTemp;
+void Profile::setReflowTargetTemp(byte targetTemp) {
+    Profile::reflowTargetTemp = targetTemp;
 }
 
-unsigned char Profile::getReflowMaxTime() const {
+byte Profile::getReflowMaxTime() const {
     return reflowMaxTime;
 }
 
-void Profile::setReflowMaxTime(unsigned char reflowMaxTime) {
-    Profile::reflowMaxTime = reflowMaxTime;
+void Profile::setReflowMaxTime(byte maxTime) {
+    Profile::reflowMaxTime = maxTime;
 }
 
-unsigned char Profile::getReflowHeaters() const {
+byte Profile::getReflowHeaters() const {
     return reflowHeaters;
 }
 
-void Profile::setReflowHeaters(unsigned char reflowHeaters) {
-    Profile::reflowHeaters = reflowHeaters;
+void Profile::setReflowHeaters(byte heaters) {
+    Profile::reflowHeaters = heaters;
 }
 
-unsigned char Profile::getCoolDownTargetTemp() const {
+byte Profile::getCoolDownTargetTemp() const {
     return coolDownTargetTemp;
 }
 
-void Profile::setCoolDownTargetTemp(unsigned char coolDownTargetTemp) {
-    Profile::coolDownTargetTemp = coolDownTargetTemp;
+void Profile::setCoolDownTargetTemp(byte targetTemp) {
+    Profile::coolDownTargetTemp = targetTemp;
 }
 
-unsigned char Profile::getProfileNumber() const {
+byte Profile::getProfileNumber() const {
     return profileNumber;
 }
 
-void Profile::setProfileNumber(unsigned char profileNumber) {
-    Profile::profileNumber = profileNumber;
+void Profile::setProfileNumber(byte number) {
+    Profile::profileNumber = number;
 }
 
 
-Profile::Profile(unsigned char profileNumber, unsigned char preHeatTargetTemp, unsigned char preHeatMaxTime, unsigned char preHeatHeaters,
-                 unsigned char soakTargetTemp, unsigned char soakMaxTime, unsigned char soakHeaters,
-                 unsigned char reflowTargetTemp, unsigned char reflowMaxTime, unsigned char reflowHeaters,
-                 unsigned char coolDownTargetTemp) : profileNumber(profileNumber), preHeatTargetTemp(preHeatTargetTemp),
+Profile::Profile(byte profileNumber, byte preHeatTargetTemp, byte preHeatMaxTime, byte preHeatHeaters,
+                 byte soakTargetTemp, byte soakMaxTime, byte soakHeaters,
+                 byte reflowTargetTemp, byte reflowMaxTime, byte reflowHeaters,
+                 byte coolDownTargetTemp) : profileNumber(profileNumber), preHeatTargetTemp(preHeatTargetTemp),
                                                      preHeatMaxTime(preHeatMaxTime), preHeatHeaters(preHeatHeaters),
                                                      soakTargetTemp(soakTargetTemp), soakMaxTime(soakMaxTime),
                                                      soakHeaters(soakHeaters), reflowTargetTemp(reflowTargetTemp),
                                                      reflowMaxTime(reflowMaxTime), reflowHeaters(reflowHeaters),
                                                      coolDownTargetTemp(coolDownTargetTemp) {}
 
+void Profile::save() {
+
+    byte startPosition = (profileNumber-1)*totalProfileValues;
+    EEPROM.write(startPosition, profileNumber);
+    EEPROM.write(++startPosition, preHeatTargetTemp);
+    EEPROM.write(++startPosition, preHeatMaxTime);
+    EEPROM.write(++startPosition, preHeatHeaters);
+    EEPROM.write(++startPosition, soakTargetTemp);
+    EEPROM.write(++startPosition, soakMaxTime);
+    EEPROM.write(++startPosition, soakHeaters);
+    EEPROM.write(++startPosition, reflowTargetTemp);
+    EEPROM.write(++startPosition, reflowMaxTime);
+    EEPROM.write(++startPosition, reflowHeaters);
+    EEPROM.write(++startPosition, coolDownTargetTemp);
+
+}
+
+void Profile::loadProfile(byte profileNumber) {
+
+    byte startPosition = (profileNumber - 1) * totalProfileValues;
+    Profile::profileNumber = EEPROM.read(startPosition);
+    Profile::preHeatTargetTemp = EEPROM.read(++startPosition);
+    Profile::preHeatMaxTime = EEPROM.read(++startPosition);
+    Profile::preHeatHeaters = EEPROM.read(++startPosition);
+    Profile::soakTargetTemp = EEPROM.read(++startPosition);
+    Profile::soakMaxTime = EEPROM.read(++startPosition);
+    Profile::soakHeaters = EEPROM.read(++startPosition);
+    Profile::reflowTargetTemp = EEPROM.read(++startPosition);
+    Profile::reflowMaxTime = EEPROM.read(++startPosition);
+    Profile::reflowHeaters = EEPROM.read(++startPosition);
+    Profile::coolDownTargetTemp = EEPROM.read(++startPosition);
+
+}

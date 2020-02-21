@@ -5,73 +5,80 @@
 #ifndef REFLOW_OVEN_PROFILE_H
 #define REFLOW_OVEN_PROFILE_H
 
+#include <Arduino.h>
+
 class Profile {
 public:
-    Profile(unsigned char profileNumber, unsigned char preHeatTargetTemp, unsigned char preHeatMaxTime, unsigned char preHeatHeaters,
-            unsigned char soakTargetTemp, unsigned char soakMaxTime, unsigned char soakHeaters,
-            unsigned char reflowTargetTemp, unsigned char reflowMaxTime, unsigned char reflowHeaters,
-            unsigned char coolDownTargetTemp);
+    Profile(byte profileNumber, byte preHeatTargetTemp, byte preHeatMaxTime, byte preHeatHeaters,
+            byte soakTargetTemp, byte soakMaxTime, byte soakHeaters,
+            byte reflowTargetTemp, byte reflowMaxTime, byte reflowHeaters,
+            byte coolDownTargetTemp);
 
-    unsigned char getProfileNumber() const;\
+    byte getProfileNumber() const;\
 
-    void setProfileNumber(unsigned char profileNumber);
+    void setProfileNumber(byte number);
 
-    unsigned char getPreHeatTargetTemp() const;
+    byte getPreHeatTargetTemp() const;
 
-    void setPreHeatTargetTemp(unsigned char preHeatTargetTemp);
+    void setPreHeatTargetTemp(byte targetTemp);
 
-    unsigned char getPreHeatMaxTime() const;
+    byte getPreHeatMaxTime() const;
 
-    void setPreHeatMaxTime(unsigned char preHeatMaxTime);
+    void setPreHeatMaxTime(byte maxTime);
 
-    unsigned char getPreHeatHeaters() const;
+    byte getPreHeatHeaters() const;
 
-    void setPreHeatHeaters(unsigned char preHeatHeaters);
+    void setPreHeatHeaters(byte heaters);
 
-    unsigned char getSoakTargetTemp() const;
+    byte getSoakTargetTemp() const;
 
-    void setSoakTargetTemp(unsigned char soakTargetTemp);
+    void setSoakTargetTemp(byte targetTemp);
 
-    unsigned char getSoakMaxTime() const;
+    byte getSoakMaxTime() const;
 
-    void setSoakMaxTime(unsigned char soakMaxTime);
+    void setSoakMaxTime(byte maxTime);
 
-    unsigned char getSoakHeaters() const;
+    byte getSoakHeaters() const;
 
-    void setSoakHeaters(unsigned char soakHeaters);
+    void setSoakHeaters(byte heaters);
 
-    unsigned char getReflowTargetTemp() const;
+    byte getReflowTargetTemp() const;
 
-    void setReflowTargetTemp(unsigned char reflowTargetTemp);
+    void setReflowTargetTemp(byte targetTemp);
 
-    unsigned char getReflowMaxTime() const;
+    byte getReflowMaxTime() const;
 
-    void setReflowMaxTime(unsigned char reflowMaxTime);
+    void setReflowMaxTime(byte maxTime);
 
-    unsigned char getReflowHeaters() const;
+    byte getReflowHeaters() const;
 
-    void setReflowHeaters(unsigned char reflowHeaters);
+    void setReflowHeaters(byte heaters);
 
-    unsigned char getCoolDownTargetTemp() const;
+    byte getCoolDownTargetTemp() const;
 
-    void setCoolDownTargetTemp(unsigned char coolDownTargetTemp);
+    void setCoolDownTargetTemp(byte targetTemp);
+
+    void save();
+
+    void loadProfile(byte profileNumber);
 
 private:
     Profile() {};
-    unsigned char profileNumber;
-    unsigned char preHeatTargetTemp;
-    unsigned char preHeatMaxTime;
-    unsigned char preHeatHeaters;
 
-    unsigned char soakTargetTemp;
-    unsigned char soakMaxTime;
-    unsigned char soakHeaters;
+    const static byte totalProfileValues = 11;
 
-    unsigned char reflowTargetTemp;
-    unsigned char reflowMaxTime;
-    unsigned char reflowHeaters;
+    byte profileNumber;
+    byte preHeatTargetTemp;
+    byte preHeatMaxTime;
+    byte preHeatHeaters;
+    byte soakTargetTemp;
+    byte soakMaxTime;
+    byte soakHeaters;
+    byte reflowTargetTemp;
+    byte reflowMaxTime;
+    byte reflowHeaters;
+    byte coolDownTargetTemp;
 
-    unsigned char coolDownTargetTemp;
 };
 
 
