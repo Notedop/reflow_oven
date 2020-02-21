@@ -2,16 +2,15 @@
 #ifndef Q_MENU_DISPLAY_H
 #define Q_MENU_DISPLAY_H
 
-#ifndef _ADAFRUIT_GFX_H
-    #include <Adafruit_SSD1306.h>
-    #include <Adafruit_GFX.h>
-#endif
-
+#include <SPI.h>
+#include "SSD1306Ascii.h"
+#include "SSD1306AsciiSoftSpi.h"
 #include "customInputBox/customInputBox.h"
 
 class MenuDisplay {
 public:
-    explicit MenuDisplay(Adafruit_SSD1306 *disp);
+
+    explicit MenuDisplay(SSD1306AsciiSoftSpi *disp);
 
     MenuDisplay();
 
@@ -30,7 +29,7 @@ public:
     void ShowInputBox(customInputBox inputBox);
 
 private:
-    Adafruit_SSD1306 * disp;
+    SSD1306AsciiSoftSpi *disp;
 };
 
 

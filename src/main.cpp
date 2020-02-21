@@ -1,5 +1,3 @@
-#include <Adafruit_GFX.h>
-#include <Adafruit_SSD1306.h>
 #include <max6675.h>
 #include <Encoder.h>
 #include <constants.h>
@@ -11,11 +9,11 @@
 #include <ReflowController.h>
 
 MAX6675 temp_sensor;
-Adafruit_SSD1306 display(128, 64, OLED_MOSI, OLED_CLK, OLED_DC, OLED_RESET, OLED_CS);
+SSD1306AsciiSoftSpi display;
+
 MenuSystem menu;
 Encoder encoder(encoder0PinA, encoder0PinB, encoder0Button);
 Profile activeProfile(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-
 
 char Celsius_C[8];
 double Celcius_d;
@@ -54,34 +52,35 @@ void setup() {
     pinMode(HEAT_PIN, OUTPUT);
     digitalWrite(HEAT_PIN, LOW);
 
-    //Serial.begin(9600);
-    //Serial.println("start");
+    Serial.begin(9600);
+    Serial.println(F("start"));
     temp_sensor.begin(thermoCLK, thermoCS, thermoDO);
 
     attachInterrupt(1, doEncoderScroll, CHANGE);  // encoder pin on interrupt 1 - pin 3
     attachInterrupt(0, doEncoderClick, LOW); //
+    display.begin(&Adafruit128x64, OLED_CS, OLED_DC, OLED_CLK, OLED_MOSI, OLED_RESET);
     menu = MenuSystem(&display);
     menu.InitMenu(mnuRoot, cntRoot, 1);
-   //Serial.println("end");
-
+   Serial.println(F("end"));
+   Serial.println(freeMemory1());
 }
 
-void setTopText(const char *value, uint8_t x, uint8_t y, uint8_t size) {
-    display.setCursor(x, y);
-    display.setTextSize(size);
-    display.println(value);
-}
-
-void drawChart() {
-
-    for (int8_t i = 0; i < (numberOfReads - 1); i++) {
-        display.writeLine(
-                i * xWidth, map(temperatureHistory[i], 0, 255, 64, 16),
-                (i + 1) * xWidth, map(temperatureHistory[i + 1], 0, 255, 64, 16),
-                WHITE
-        );
-    }
-}
+//void setTopText(const char *value, uint8_t  x, uint8_t y, uint8_t size) {
+//    display.setCursor(x, y);
+//    //display.setTextSize(size);
+//    display.println(value);
+//}
+//
+//void drawChart() {
+//
+//    for (int8_t i = 0; i < (numberOfReads - 1); i++) {
+//        display.writeLine(
+//                i * xWidth, map(temperatureHistory[i], 0, 255, 64, 16),
+//                (i + 1) * xWidth, map(temperatureHistory[i + 1], 0, 255, 64, 16),
+//                WHITE
+//        );
+//    }
+//}
 
 void addNewValue(uint8_t value) {
 
@@ -100,17 +99,22 @@ void loop() {
         //Serial.println(F("ACTON_DOWN"));
         menu.ProcessMenu(ACTION_DOWN);
         encoder.setPosition(0); //reset the position
-
+        Serial.print(F("ACTION_DOWN"));
+        Serial.println(freeMemory1());
     } else if (encoder.getPosition() <= -2) {
         Serial.println(F("ACTION_UP"));
         menu.ProcessMenu(ACTION_UP);
         encoder.setPosition(0); //reset the position
+        Serial.print(F("ACTION_UP"));
+        Serial.println(freeMemory1());
     } else if (encoder.getClicked()) {
         //Serial.println(F("ACTION_SELECT"));
         clickedItem = menu.ProcessMenu(ACTION_SELECT);
         //Serial.print(F("ClickedItem:"));
         //Serial.println(clickedItem);
         encoder.resetClicked(); //reset the position
+        Serial.print(F("ACTION_SELECT"));
+        Serial.println(freeMemory1());
     }
 
     if (clickedItem > 0) {
@@ -195,8 +199,8 @@ void loop() {
                     break;
                 case 7: //Start
                     {
-                        ReflowController controller(menu, temp_sensor, activeProfile);
-                        controller.Start();
+//                        ReflowController controller(menu, temp_sensor, activeProfile);
+//                        controller.Start();
                     }
                     break;
                 case 8: //Back to mnuSubProfiles
@@ -321,33 +325,33 @@ void loop() {
     }
 }
 
-void doChart() {
-    Celcius_d = temp_sensor.readCelsius();
-    dtostrf(Celcius_d, 4, 2, Celsius_C);
-    //Serial.println(Celsius_C);
-    display.clearDisplay();
-
-    if (Celcius_d > 235.0) {
-        digitalWrite(HEAT_PIN, LOW);
-        setTopText(OFF, 112, 0, 2);
-    } else if (Celcius_d == 235.0) {
-        digitalWrite(HEAT_PIN, LOW);
-        setTopText("-", 112, 0, 2);
-    } else if (Celcius_d < 235.0) {
-        digitalWrite(HEAT_PIN, HIGH);
-        setTopText(ON, 112, 0, 2);
-    }
-
-    setTopText(Celsius_C, 0, 0, 2);
-    drawChart();
-    display.display();
-    display.clearDisplay();
-
-    if ((millis() - tempMillis) > intervalSensorRead) {
-        addNewValue((uint8_t) Celcius_d);
-        tempMillis = millis();
-    }
-    //chartPos=rand();
-    delay(1000);
-}
+//void doChart() {
+//    Celcius_d = temp_sensor.readCelsius();
+//    dtostrf(Celcius_d, 4, 2, Celsius_C);
+//    //Serial.println(Celsius_C);
+//    display.clearDisplay();
+//
+//    if (Celcius_d > 235.0) {
+//        digitalWrite(HEAT_PIN, LOW);
+//        setTopText(OFF, 112, 0, 2);
+//    } else if (Celcius_d == 235.0) {
+//        digitalWrite(HEAT_PIN, LOW);
+//        setTopText("-", 112, 0, 2);
+//    } else if (Celcius_d < 235.0) {
+//        digitalWrite(HEAT_PIN, HIGH);
+//        setTopText(ON, 112, 0, 2);
+//    }
+//
+//    setTopText(Celsius_C, 0, 0, 2);
+//    drawChart();
+//    display.display();
+//    display.clearDisplay();
+//
+//    if ((millis() - tempMillis) > intervalSensorRead) {
+//        addNewValue((uint8_t) Celcius_d);
+//        tempMillis = millis();
+//    }
+//    //chartPos=rand();
+//    delay(1000);
+//}
 

@@ -1,68 +1,65 @@
+
 #include "MenuDisplay.h"
-//#include <constants.h>
 
-MenuDisplay::MenuDisplay()
-{
-}
+MenuDisplay::MenuDisplay() = default;
 
-MenuDisplay::MenuDisplay(Adafruit_SSD1306 *disp) {
-    //Serial.begin(9600);
-    //Serial.println(F("constructor menudisplay"));
+MenuDisplay::MenuDisplay(SSD1306AsciiSoftSpi *disp) {
+
     this->disp = disp;
-    disp->begin();
-    disp->setTextColor(WHITE);
-    disp->setTextWrap(true);
-    disp->clearDisplay();
+    disp->setFont(Adafruit5x7);
+    disp->clear();
     disp->setCursor(0, 0);
-    disp->setTextSize(1); //TODO: Make this a configurable constant. Or maybe even better; configurable via menu itself
-    // Serial.println("end menudisplay");
+    disp->setContrast(50);
+
+}
+void MenuDisplay::Start() {
+    disp->clear();
 }
 
-void MenuDisplay::Start()
-{
-    disp->clearDisplay();
+void MenuDisplay::Finish() {
+    //delay(1);
 }
 
-void MenuDisplay::Finish()
-{
-    disp->display();
-    delay(1);
+void MenuDisplay::Title(const char text[]) {
+    disp->setInvertMode(false);
+    disp->setCursor(0, 0);
+    disp->println(text);
 }
 
-void MenuDisplay::Title(const char text[])
-{
-  disp->setTextColor(SSD1306_WHITE);
-  disp->setCursor(0, 0);
-  disp->print(text);
+void MenuDisplay::Item(int index, const char text[]) {
+    disp->setInvertMode(false);
+//    Serial.print("fontHeight:");
+//    Serial.println(disp->fontHeight());
+//    Serial.print("index:");
+//    Serial.println(index);
+//    Serial.print("row:");
+//    Serial.println((index * disp->fontHeight()) + 16);
+
+    disp->setCursor(disp->fontWidth(), (index * disp->fontRows()) + disp->fontRows()*2);
+    disp->println(text);
 }
 
-void MenuDisplay::Item(int index,const char text[])
-{
-  disp->setTextColor(SSD1306_WHITE);
-  disp->setCursor(5, (index * 8) + 16); //TODO: Create constants for pixel offset and char pixel height. Height of char with textsize 1 is 8
-  disp->print(text);
-}
-
-void MenuDisplay::Highlight(int index,const char text[])
-{
-  disp->setCursor(5, (index * 8) + 16); //TODO: Create constants for pixel offset and char pixel height. Height of char with textsize 1 is 8
-  disp->setTextColor(SSD1306_BLACK, SSD1306_WHITE);
-  disp->print(text);
+void MenuDisplay::Highlight(int index, const char text[]) {
+    disp->setCursor(5, (index * disp->fontRows()+disp->fontRows()*2));
+    disp->setInvertMode(true);
+    disp->println(text);
 }
 
 void MenuDisplay::ShowInputBox(customInputBox inputBox) {
 
+    int number = inputBox.getCurrentValue();
+    int digits = 0;
+    do { number /= 10; digits++; } while (number != 0);
 
     this->Title(inputBox.getTitle());
-    disp->setCursor(55, 20);
-    disp->setTextSize(3);
-    disp->setTextColor(SSD1306_BLACK, SSD1306_WHITE);
-    //todo: center the value based on screen size and value size (depends on fontheight[pixels]*chars/2 etc etc
-    disp->print(inputBox.getCurrentValue());
-    disp->drawRect(1, 16, 127, 48, SSD1306_WHITE);
-    disp->setTextSize(1);
+    disp->set2X();
+    disp->setCursor((disp->displayWidth()/2)-((disp->fontWidth()*digits)/2),(disp->displayRows()/2)-(disp->fontRows()/2));
+    disp->setInvertMode(true);
+    disp->println(inputBox.getCurrentValue());
+    disp->set1X();
 
 }
+
 
 // void MenuDisplay::MessageBox(const char text[])
 // {

@@ -10,13 +10,13 @@
 
 MenuSystem::MenuSystem() {};
 
-MenuSystem::MenuSystem(Adafruit_SSD1306 *disp) {
-    //Serial.println("constrcutor menu system");
+MenuSystem::MenuSystem(SSD1306AsciiSoftSpi *disp) {
     qmd = MenuDisplay(disp);
     _inputBox = customInputBox(NULL, 1,255);
     _selectedIndex = 0;
     _itemCount = 0;
     _firstVisible = 1;
+
 }
 
 void MenuSystem::InitMenu(const char *const *page, int itemCount, int selectedIndex) {

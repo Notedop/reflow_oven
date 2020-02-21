@@ -9,6 +9,7 @@
 #ifndef MenuSystem_h
 #define MenuSystem_h
 
+#include <SSD1306Ascii.h>
 #include "MenuDisplay.h"
 #include "customInputBox/customInputBox.h"
 
@@ -23,8 +24,13 @@ class MenuSystem
 {
   public:
     MenuSystem();
-    MenuSystem(Adafruit_SSD1306* disp);
-    void InitMenu(const char * const * page, int itemCount, int selectedIndex);
+
+    //explicit MenuSystem(Adafruit_SSD1306 *disp);
+
+    explicit MenuSystem(SSD1306AsciiSoftSpi * disp);
+
+    void InitMenu(const char *const *page, int itemCount, int selectedIndex);
+
     int ProcessMenu(int action);
     void ShowMenu();
     // void MessageBox(const char text[]) { qmd.MessageBox(text); };
