@@ -31,7 +31,10 @@ class MenuSystem
     const char * const * CurrentMenu;
     bool inputAvailable();
     int getInput();
-    void ShowInputBox(const char *title, int &minValue, int &maxValue, int &currentValue);
+
+    void ShowInputBox(const char *title, byte &minValue, byte &maxValue, byte &currentValue);
+
+
 
 private:
     void ShowInputBox();

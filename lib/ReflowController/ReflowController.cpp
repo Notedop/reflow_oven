@@ -25,9 +25,9 @@
 
 void ReflowController::Start() {
 
-    int min = 0;
-    int max = 10;
-    int current = 5;
+    byte min = 0;
+    byte max = 10;
+    byte current = 5;
     menu.ShowInputBox("testReflow",min, max, current );
     //while (!menu.inputAvailable()) {}
 

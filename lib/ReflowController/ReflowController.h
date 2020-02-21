@@ -118,42 +118,41 @@ private:
     MAX6675 thermocouple;
     Profile profile;
 
-//    // ***** DEGREE SYMBOL FOR LCD *****
-//    unsigned char degree[8] = {
-//            140, 146, 146, 140, 128, 128, 128, 128};
-//
-//    // ***** PID CONTROL VARIABLES *****
-//    double setpoint = 0.0;
-//    double input  = 0.0;
-//    double output  = 0.0;
-//    double kp = PID_KP_PREHEAT;
-//    double ki = PID_KI_PREHEAT;
-//    double kd = PID_KD_PREHEAT;
-//    int windowSize  = 0.0;
-//    unsigned long windowStartTime =0;
-//    unsigned long nextCheck =0;
-//    unsigned long nextRead =0;
-//    unsigned long timerSoak =0;
-//    unsigned long buzzerPeriod =0;
-//
-//    // Reflow oven controller state machine state variable
-//    reflowState_t reflowState = REFLOW_STATE_IDLE;
-//
-//    // Reflow oven controller status
-//    reflowStatus_t reflowStatus =  REFLOW_STATUS_OFF;
-//    ;
-//
-//    // Switch debounce state machine state variable
-//    debounceState_t debounceState = DEBOUNCE_STATE_IDLE;
-//
-//    // Switch debounce timer
-//    long lastDebounceTime = 0;
-//
-//    // Switch press status
-//    switch_t switchStatus = SWITCH_NONE;
+    // ***** DEGREE SYMBOL FOR LCD *****
+    byte degree[8] = { 140, 146, 146, 140, 128, 128, 128, 128};
+
+    // ***** PID CONTROL VARIABLES *****
+    short setpoint = 0.0;
+    short input  = 0.0;
+    short output  = 0.0;
+    double kp = PID_KP_PREHEAT;
+    double ki = PID_KI_PREHEAT;
+    double kd = PID_KD_PREHEAT;
+    byte windowSize  = 0;
+    unsigned long windowStartTime =0;
+    unsigned long nextCheck =0;
+    unsigned long nextRead =0;
+    unsigned long timerSoak =0;
+    unsigned long buzzerPeriod =0;
+
+    // Reflow oven controller state machine state variable
+    reflowState_t reflowState = REFLOW_STATE_IDLE;
+
+    // Reflow oven controller status
+    reflowStatus_t reflowStatus =  REFLOW_STATUS_OFF;
+    ;
+
+    // Switch debounce state machine state variable
+    debounceState_t debounceState = DEBOUNCE_STATE_IDLE;
+
+    // Switch debounce timer
+    long lastDebounceTime = 0;
+
+    // Switch press status
+    switch_t switchStatus = SWITCH_NONE;
 
     // Seconds timer
-//    int timerSeconds = 0;
+    int timerSeconds = 0;
 
     //PID reflowOvenPID = PID(&input, &output, &setpoint, kp, ki, kd, DIRECT);
 

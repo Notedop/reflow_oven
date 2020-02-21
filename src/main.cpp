@@ -20,18 +20,18 @@ Profile activeProfile(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 char Celsius_C[8];
 double Celcius_d;
 
-uint8_t temperatureHistory[numberOfReads] = {10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10};
-uint8_t chartPos = 0;
+byte temperatureHistory[numberOfReads] = {10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10};
+byte chartPos = 0;
 
 unsigned long lastRead = 0;
 unsigned long debounceDelay = 50;
 
-uint16_t intervalSensorRead = 10000;
-uint32_t tempMillis = 0;
+word intervalSensorRead = 10000;
+unsigned long tempMillis = 0;
 
-int minValue = 1;
-int maxValue = 3;
-int currentValue = activeProfile.getProfileNumber();
+byte minValue = 1;
+byte maxValue = 3;
+byte currentValue = activeProfile.getProfileNumber();
 
 
 void doEncoderScroll() {

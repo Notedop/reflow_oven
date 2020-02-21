@@ -5,8 +5,7 @@
 
 class Encoder {
   public:
-
-    // constructor : sets pins as inputs and turns on pullup resistors
+   // constructor : sets pins as inputs and turns on pullup resistors
 
     Encoder( int8_t PinA, int8_t PinB, int8_t PinC) : pin_a ( PinA), pin_b( PinB ), pin_c( PinC ) {
       // set pin a and b to be input
@@ -31,13 +30,13 @@ class Encoder {
 
     // returns current position
 
-    long getPosition () {
+    char getPosition () {
       return position;
     };
 
     // set the position value
 
-    void setPosition ( long p) {
+    void setPosition ( char p) {
       position = p;
     };
 
@@ -55,7 +54,7 @@ class Encoder {
 
   private:
 
-    volatile long position;
+    char position;
 
     int8_t pin_a;
 
