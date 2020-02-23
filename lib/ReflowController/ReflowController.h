@@ -100,15 +100,13 @@
 #include <PID_v1.h>
 #include <MenuSystem.h>
 #include <Profile.h>
+#include <Encoder.h>
 #include "constants.h"
 
 class ReflowController {
 public:
-    //ReflowController() : profile(Profile(0,0,0,0,0,0,0,0,0,0,0)){};
-    ReflowController(MenuSystem &menu, MAX6675 &thermocouple, Profile &profile) : menu(menu), thermocouple(thermocouple),
-                                                                                 profile(profile) {
-
-    }
+    ReflowController() = default;;
+    ReflowController(MenuSystem &menu, MAX6675 &thermocouple, Profile &profile, Encoder *encoder, byte &heatPin1, byte &heatPin2 ) ;
 
     void Start();
 
@@ -117,14 +115,15 @@ private:
     MenuSystem menu;
     MAX6675 thermocouple;
     Profile profile;
+    Encoder * encoder;
 
     // ***** DEGREE SYMBOL FOR LCD *****
     byte degree[8] = { 140, 146, 146, 140, 128, 128, 128, 128};
 
     // ***** PID CONTROL VARIABLES *****
-    short setpoint = 0.0;
-    short input  = 0.0;
-    short output  = 0.0;
+    double setpoint = 0.0;
+    double input  = 0.0;
+    double output  = 0.0;
     double kp = PID_KP_PREHEAT;
     double ki = PID_KI_PREHEAT;
     double kd = PID_KD_PREHEAT;
@@ -137,24 +136,15 @@ private:
 
     // Reflow oven controller state machine state variable
     reflowState_t reflowState = REFLOW_STATE_IDLE;
-
     // Reflow oven controller status
     reflowStatus_t reflowStatus =  REFLOW_STATUS_OFF;
-    ;
-
-    // Switch debounce state machine state variable
-    debounceState_t debounceState = DEBOUNCE_STATE_IDLE;
-
-    // Switch debounce timer
-    long lastDebounceTime = 0;
-
     // Switch press status
     switch_t switchStatus = SWITCH_NONE;
-
     // Seconds timer
     int timerSeconds = 0;
-
-    //PID reflowOvenPID = PID(&input, &output, &setpoint, kp, ki, kd, DIRECT);
+    byte heatPin1 = 0;
+    byte heatPin2 = 0;
+    PID reflowOvenPID = PID(&input, &output, &setpoint, kp, ki, kd, DIRECT);
 
 
 

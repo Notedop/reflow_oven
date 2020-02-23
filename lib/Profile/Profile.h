@@ -62,8 +62,9 @@ public:
 
     void loadProfile(byte profileNumber);
 
+    Profile() {}
+
 private:
-    Profile() {};
 
     const static byte totalProfileValues = 11;
 

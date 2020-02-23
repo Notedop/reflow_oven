@@ -213,11 +213,10 @@ void loop() {
                     printActiveProfile();
                     break;
                 case 7: //Start
-                    {
-                        activeProfile.loadProfile(2);
-//                        ReflowController controller(menu, temp_sensor, activeProfile);
-//                        controller.Start();
-                    }
+                {
+                    ReflowController controller(menu, temp_sensor, activeProfile, &encoder, HEAT_PIN, HEAT_PIN2);
+                    controller.Start();
+                }
                     break;
                 case 8: //Back to mnuSubProfiles
                     menu.InitMenu(mnuSubProfiles, cntSubProfiles, 1);
