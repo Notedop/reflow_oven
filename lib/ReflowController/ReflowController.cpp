@@ -30,10 +30,6 @@ ReflowController::ReflowController(MenuSystem &menu, Profile &profile, Encoder *
 
 void ReflowController::Start() {
 
-    #define thermoDO 7 //SO - PIN ?
-    #define thermoCS 5 //CS - PIN 11
-    #define thermoCLK 6 //SCK - PIN 12
-
     MAX6675 thermocouple(6,5,7);
     delay(500);
 
@@ -134,6 +130,7 @@ void ReflowController::Start() {
                         // Tell the PID to range between 0 and the full window size
                         reflowOvenPID.SetOutputLimits(0, windowSize);
                         reflowOvenPID.SetSampleTime(PID_SAMPLE_TIME);
+                        reflowOvenPID.SetTunings(profile.getPreHeatPidP(), profile.getPreHeatPidI(), profile.getPreHeatPidD());
                         // Turn the PID on
                         reflowOvenPID.SetMode(AUTOMATIC);
                         // Proceed to preheat stage
@@ -150,7 +147,7 @@ void ReflowController::Start() {
                     // Chop soaking period into smaller sub-period
                     //timerSoak = millis() + SOAK_MICRO_PERIOD;
                     // Set less agressive PID parameters for soaking ramp
-                    reflowOvenPID.SetTunings(PID_KP_SOAK, PID_KI_SOAK, PID_KD_SOAK);
+                    reflowOvenPID.SetTunings(profile.getSoakPidP(), profile.getSoakPidI(), profile.getSoakPidD());
                     // Ramp up to first section of soaking temperature
                     setpoint =  (double(profile.getSoakTargetTemp())- double(profile.getPreHeatTargetTemp()))/profile.getSoakMaxTime() / (1000.0/PID_SAMPLE_TIME) ;
                     // Proceed to soaking state
@@ -166,7 +163,7 @@ void ReflowController::Start() {
 //                    setpoint += SOAK_TEMPERATURE_STEP;
 //                    if (setpoint > TEMPERATURE_SOAK_MAX) {
                     // Set agressive PID parameters for reflow ramp
-                    reflowOvenPID.SetTunings(PID_KP_REFLOW, PID_KI_REFLOW, PID_KD_REFLOW);
+                    reflowOvenPID.SetTunings(profile.getReflowPidP(), profile.getReflowPidI(), profile.getReflowPidD());
                     // Ramp up to first section of soaking temperature
                     setpoint =  (double(profile.getReflowTargetTemp())- double(profile.getSoakTargetTemp()))/profile.getReflowMaxTime() / (1000.0/PID_SAMPLE_TIME) ;
                     // Proceed to reflowing state
@@ -176,11 +173,7 @@ void ReflowController::Start() {
                 break;
 
             case REFLOW_STATE_REFLOW:
-                // We need to avoid hovering at peak temperature for too long
-                // Crude method that works like a charm and safe for the components
                 if (previousTemp >= profile.getReflowTargetTemp()) {
-                    // Set PID parameters for cooling ramp
-                    reflowOvenPID.SetTunings(PID_KP_REFLOW, PID_KI_REFLOW, PID_KD_REFLOW);
                     // Ramp down to minimum cooling temperature
                     setpoint = -1000.0;
                     // Proceed to cooling state
@@ -191,11 +184,6 @@ void ReflowController::Start() {
             case REFLOW_STATE_COOL:
                 // If minimum cool temperature is achieve
                 if (previousTemp <= profile.getCoolDownTargetTemp()) {
-                    // Retrieve current time for buzzer usage
-                    //buzzerPeriod = millis() + 1000;
-                    // Turn on buzzer and green LED to indicate completion
-//                    digitalWrite(ledGreenPin, LOW);
-//                    digitalWrite(buzzerPin, HIGH);
                     // Turn off reflow process
                     reflowStatus = REFLOW_STATUS_OFF;
                     // Proceed to reflow Completion state
