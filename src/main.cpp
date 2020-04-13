@@ -12,7 +12,7 @@ SSD1306AsciiSoftSpi display;
 
 MenuSystem menu;
 Encoder encoder(encoder0PinA, encoder0PinB, encoder0Button);
-Profile activeProfile(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+Profile activeProfile;
 
 char Celsius_C[8];
 double Celcius_d;

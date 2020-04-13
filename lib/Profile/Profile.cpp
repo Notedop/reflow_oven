@@ -5,6 +5,7 @@
 #include <EEPROM.h>
 #include "Profile.h"
 
+
 byte Profile::getPreHeatTargetTemp() const {
     return preHeatTargetTemp;
 }
@@ -94,29 +95,33 @@ void Profile::setProfileNumber(byte number) {
 }
 
 
-Profile::Profile(byte profileNumber, byte preHeatTargetTemp, byte preHeatMaxTime, byte preHeatHeaters,
-                 byte soakTargetTemp, byte soakMaxTime, byte soakHeaters,
-                 byte reflowTargetTemp, byte reflowMaxTime, byte reflowHeaters,
-                 byte coolDownTargetTemp) : profileNumber(profileNumber), preHeatTargetTemp(preHeatTargetTemp),
-                                                     preHeatMaxTime(preHeatMaxTime), preHeatHeaters(preHeatHeaters),
-                                                     soakTargetTemp(soakTargetTemp), soakMaxTime(soakMaxTime),
-                                                     soakHeaters(soakHeaters), reflowTargetTemp(reflowTargetTemp),
-                                                     reflowMaxTime(reflowMaxTime), reflowHeaters(reflowHeaters),
-                                                     coolDownTargetTemp(coolDownTargetTemp) {}
-
 void Profile::save() {
 
     byte startPosition = (profileNumber-1)*totalProfileValues;
     EEPROM.write(startPosition, profileNumber);
+
     EEPROM.write(++startPosition, preHeatTargetTemp);
     EEPROM.write(++startPosition, preHeatMaxTime);
     EEPROM.write(++startPosition, preHeatHeaters);
+    EEPROM.write(++startPosition, preHeatPidP);
+    EEPROM.write(++startPosition, preHeatPidI);
+    EEPROM.write(++startPosition, preHeatPidD);
+
     EEPROM.write(++startPosition, soakTargetTemp);
     EEPROM.write(++startPosition, soakMaxTime);
     EEPROM.write(++startPosition, soakHeaters);
+    EEPROM.write(++startPosition, soakPidP);
+    EEPROM.write(++startPosition, soakPidI);
+    EEPROM.write(++startPosition, soakPidD);
+
     EEPROM.write(++startPosition, reflowTargetTemp);
     EEPROM.write(++startPosition, reflowMaxTime);
     EEPROM.write(++startPosition, reflowHeaters);
+    EEPROM.write(++startPosition, reflowPidP);
+    EEPROM.write(++startPosition, reflowPidI);
+    EEPROM.write(++startPosition, reflowPidD);
+
+
     EEPROM.write(++startPosition, coolDownTargetTemp);
 
 }
@@ -125,15 +130,101 @@ void Profile::loadProfile(byte profileNumber) {
 
     byte startPosition = (profileNumber - 1) * totalProfileValues;
     Profile::profileNumber = EEPROM.read(startPosition);
+
     Profile::preHeatTargetTemp = EEPROM.read(++startPosition);
     Profile::preHeatMaxTime = EEPROM.read(++startPosition);
     Profile::preHeatHeaters = EEPROM.read(++startPosition);
+    Profile::preHeatPidP = EEPROM.read(++startPosition);
+    Profile::preHeatPidI = EEPROM.read(++startPosition);
+    Profile::preHeatPidD = EEPROM.read(++startPosition);
+
     Profile::soakTargetTemp = EEPROM.read(++startPosition);
     Profile::soakMaxTime = EEPROM.read(++startPosition);
     Profile::soakHeaters = EEPROM.read(++startPosition);
+    Profile::soakPidP = EEPROM.read(++startPosition);
+    Profile::soakPidI = EEPROM.read(++startPosition);
+    Profile::soakPidD = EEPROM.read(++startPosition);
+
     Profile::reflowTargetTemp = EEPROM.read(++startPosition);
     Profile::reflowMaxTime = EEPROM.read(++startPosition);
     Profile::reflowHeaters = EEPROM.read(++startPosition);
+    Profile::reflowPidP = EEPROM.read(++startPosition);
+    Profile::reflowPidI = EEPROM.read(++startPosition);
+    Profile::reflowPidD = EEPROM.read(++startPosition);
+
     Profile::coolDownTargetTemp = EEPROM.read(++startPosition);
 
 }
+
+byte Profile::getPreHeatPidP() const {
+    return preHeatPidP;
+}
+
+void Profile::setPreHeatPidP(byte preHeatPidP) {
+    Profile::preHeatPidP = preHeatPidP;
+}
+
+byte Profile::getPreHeatPidI() const {
+    return preHeatPidI;
+}
+
+void Profile::setPreHeatPidI(byte preHeatPidI) {
+    Profile::preHeatPidI = preHeatPidI;
+}
+
+byte Profile::getPreHeatPidD() const {
+    return preHeatPidD;
+}
+
+void Profile::setPreHeatPidD(byte preHeatPidD) {
+    Profile::preHeatPidD = preHeatPidD;
+}
+
+byte Profile::getSoakPidP() const {
+    return soakPidP;
+}
+
+void Profile::setSoakPidP(byte soakPidP) {
+    Profile::soakPidP = soakPidP;
+}
+
+byte Profile::getSoakPidI() const {
+    return soakPidI;
+}
+
+void Profile::setSoakPidI(byte soakPidI) {
+    Profile::soakPidI = soakPidI;
+}
+
+byte Profile::getSoakPidD() const {
+    return soakPidD;
+}
+
+void Profile::setSoakPidD(byte soakPidD) {
+    Profile::soakPidD = soakPidD;
+}
+
+byte Profile::getReflowPidP() const {
+    return reflowPidP;
+}
+
+void Profile::setReflowPidP(byte reflowPidP) {
+    Profile::reflowPidP = reflowPidP;
+}
+
+byte Profile::getReflowPidI() const {
+    return reflowPidI;
+}
+
+void Profile::setReflowPidI(byte reflowPidI) {
+    Profile::reflowPidI = reflowPidI;
+}
+
+byte Profile::getReflowPidD() const {
+    return reflowPidD;
+}
+
+void Profile::setReflowPidD(byte reflowPidD) {
+    Profile::reflowPidD = reflowPidD;
+}
+
