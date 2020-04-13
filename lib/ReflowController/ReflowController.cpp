@@ -4,12 +4,23 @@
 
 #include "ReflowController.h"
 
-ReflowController::ReflowController(MenuSystem &menu, MAX6675 &thermocouple, Profile &profile, Encoder *encoder,
+// ***** LCD MESSAGES *****
+const char *lcdMessagesReflowStatus[] = {
+        "Ready",
+        "Pre-heat",
+        "Soak",
+        "Reflow",
+        "Cool",
+        "Complete",
+        "Wait,hot",
+        "Error"
+};
+
+ReflowController::ReflowController(MenuSystem &menu, Profile &profile, Encoder *encoder,
                                    byte &heatPin1,
                                    byte &heatPin2) {
 
     ReflowController::menu = menu;
-    ReflowController::thermocouple = thermocouple;
     ReflowController::profile = profile;
     ReflowController::encoder = encoder;
     ReflowController::heatPin1 = heatPin1;
@@ -19,31 +30,46 @@ ReflowController::ReflowController(MenuSystem &menu, MAX6675 &thermocouple, Prof
 
 void ReflowController::Start() {
 
+    #define thermoDO 7 //SO - PIN ?
+    #define thermoCS 5 //CS - PIN 11
+    #define thermoCLK 6 //SCK - PIN 12
+
+    MAX6675 thermocouple(6,5,7);
+    delay(500);
+
     //check if initialized
     if (heatPin1 == 0 || heatPin2 == 0)
         return;
 
     reflowState = REFLOW_STATE_IDLE;
 
-    // Set window size
-    windowSize = 2000;
     // Initialize time keeping variable
     nextCheck = millis();
     // Initialize thermocouple reading variable
     nextRead = millis();
 
+    double previousTemp = 0.0;
+    double currentTemp = 0.0;
+
     while (true) {
         // Current time
         unsigned long now;
+
         // Time to read thermocouple?
         if (millis() > nextRead) {
             // Read thermocouple next sampling period
             nextRead += SENSOR_SAMPLING_TIME;
-            // Read current temperature
-            input = thermocouple.readCelsius();
+
+            // Set rise temp based on current versus previously measured temp.
+            // take PID_SAMPLE_TIME in account. 1000.0 = 1 second. If we sample every 250MS
+            // then we need to divide the rise temperature through 1000.0/PID_SAMPLE_TIME so we can calculate
+            // the average rise per second and correct if needed.
+            currentTemp = thermocouple.readCelsius();
+            input = (currentTemp-previousTemp) / (1000.0/PID_SAMPLE_TIME);
+            previousTemp = currentTemp;
 
             // If thermocouple problem detected
-            if (isnan(input)) {
+            if (isnan(previousTemp)) {
                 // Illegal operation
                 reflowState = REFLOW_STATE_ERROR;
                 reflowStatus = REFLOW_STATUS_OFF;
@@ -56,7 +82,7 @@ void ReflowController::Start() {
             // If reflow process is on going
             if (reflowStatus == REFLOW_STATUS_ON) {
                 // Toggle red LED as system heart beat
-//                digitalWrite(ledRedPin, !(digitalRead(ledRedPin)));
+//               digitalWrite(ledRedPin, !(digitalRead(ledRedPin)));
                 // Increase seconds timer for reflow curve analysis
                 timerSeconds++;
                 // Send temperature and time stamp to serial
@@ -66,31 +92,25 @@ void ReflowController::Start() {
                 Serial.print(" ");
                 Serial.print(input);
                 Serial.print(" ");
-                Serial.println(output);
-            }
-//            else {
-//                // Turn off red LED
-//                digitalWrite(ledRedPin, HIGH);
-//            }
+                Serial.print(output);
+                Serial.print(" ");
+                Serial.print(previousTemp);
+                Serial.print(" ");
+                Serial.println(lcdMessagesReflowStatus[reflowState]);
 
-            // Clear LCD
-//            lcd.clear();
-            // Print current system state
-            //Serial.println(reflowState);
-//            lcd.print(lcdMessagesReflowStatus[reflowState]);
-//            // Move the cursor to the 2 line
-//            lcd.setCursor(0, 1);
+            }
+
+            //do screen updates here
+            byte minValue = 1;
+            byte maxValue = 250;
+            byte inputValue = currentTemp;
+            menu.ShowInputBox(lcdMessagesReflowStatus[reflowState], minValue, maxValue,
+                              inputValue);
 
             // If currently in error state
             if (reflowState == REFLOW_STATE_ERROR) {
                 // No thermocouple wire connected
                 Serial.println("TC Error!");
-            } else {
-                // Print current temperature
-                //Serial.println(input);
-
-                // Print degree Celsius symbol
-                //Serial.println("C ");
             }
         }
 
@@ -98,19 +118,19 @@ void ReflowController::Start() {
         switch (reflowState) {
             case REFLOW_STATE_IDLE:
                 // If oven temperature is still above room temperature
-                if (input >= TEMPERATURE_ROOM) {
+                if (previousTemp >= TEMPERATURE_ROOM) {
                     reflowState = REFLOW_STATE_TOO_HOT;
                 } else {
                     // If switch is pressed to start reflow process
                     if (encoder->getClicked()) {
                         // Send header for CSV file
-                        Serial.println("Time Setpoint Input Output");
+                        Serial.println("Time Setpoint Input Output Temp reflowState");
                         // Intialize seconds timer for serial debug information
                         timerSeconds = 0;
                         // Initialize PID control window starting time
                         windowStartTime = millis();
-                        // Ramp up to minimum soaking temperature
-                        setpoint = TEMPERATURE_SOAK_MIN;
+                        // Ramp up to minimum soaking temperature using calculated rise temp.
+                        setpoint = ((double (profile.getPreHeatTargetTemp()) - double (TEMPERATURE_ROOM))/profile.getPreHeatMaxTime()) / (1000.0/PID_SAMPLE_TIME) ;
                         // Tell the PID to range between 0 and the full window size
                         reflowOvenPID.SetOutputLimits(0, windowSize);
                         reflowOvenPID.SetSampleTime(PID_SAMPLE_TIME);
@@ -126,13 +146,13 @@ void ReflowController::Start() {
             case REFLOW_STATE_PREHEAT:
                 reflowStatus = REFLOW_STATUS_ON;
                 // If minimum soak temperature is achieve
-                if (input >= TEMPERATURE_SOAK_MIN) {
+                if (previousTemp >= profile.getPreHeatTargetTemp()) {
                     // Chop soaking period into smaller sub-period
-                    timerSoak = millis() + SOAK_MICRO_PERIOD;
+                    //timerSoak = millis() + SOAK_MICRO_PERIOD;
                     // Set less agressive PID parameters for soaking ramp
                     reflowOvenPID.SetTunings(PID_KP_SOAK, PID_KI_SOAK, PID_KD_SOAK);
                     // Ramp up to first section of soaking temperature
-                    setpoint = TEMPERATURE_SOAK_MIN + SOAK_TEMPERATURE_STEP;
+                    setpoint =  (double(profile.getSoakTargetTemp())- double(profile.getPreHeatTargetTemp()))/profile.getSoakMaxTime() / (1000.0/PID_SAMPLE_TIME) ;
                     // Proceed to soaking state
                     reflowState = REFLOW_STATE_SOAK;
                 }
@@ -140,29 +160,29 @@ void ReflowController::Start() {
 
             case REFLOW_STATE_SOAK:
                 // If micro soak temperature is achieved
-                if (millis() > timerSoak) {
-                    timerSoak = millis() + SOAK_MICRO_PERIOD;
-                    // Increment micro setpoint
-                    setpoint += SOAK_TEMPERATURE_STEP;
-                    if (setpoint > TEMPERATURE_SOAK_MAX) {
-                        // Set agressive PID parameters for reflow ramp
-                        reflowOvenPID.SetTunings(PID_KP_REFLOW, PID_KI_REFLOW, PID_KD_REFLOW);
-                        // Ramp up to first section of soaking temperature
-                        setpoint = TEMPERATURE_REFLOW_MAX;
-                        // Proceed to reflowing state
-                        reflowState = REFLOW_STATE_REFLOW;
-                    }
+                if (previousTemp >= profile.getSoakTargetTemp()) {
+                    //timerSoak = millis() + SOAK_MICRO_PERIOD;
+//                    // Increment micro setpoint
+//                    setpoint += SOAK_TEMPERATURE_STEP;
+//                    if (setpoint > TEMPERATURE_SOAK_MAX) {
+                    // Set agressive PID parameters for reflow ramp
+                    reflowOvenPID.SetTunings(PID_KP_REFLOW, PID_KI_REFLOW, PID_KD_REFLOW);
+                    // Ramp up to first section of soaking temperature
+                    setpoint =  (double(profile.getReflowTargetTemp())- double(profile.getSoakTargetTemp()))/profile.getReflowMaxTime() / (1000.0/PID_SAMPLE_TIME) ;
+                    // Proceed to reflowing state
+                    reflowState = REFLOW_STATE_REFLOW;
+
                 }
                 break;
 
             case REFLOW_STATE_REFLOW:
                 // We need to avoid hovering at peak temperature for too long
                 // Crude method that works like a charm and safe for the components
-                if (input >= (TEMPERATURE_REFLOW_MAX - 5)) {
+                if (previousTemp >= profile.getReflowTargetTemp()) {
                     // Set PID parameters for cooling ramp
                     reflowOvenPID.SetTunings(PID_KP_REFLOW, PID_KI_REFLOW, PID_KD_REFLOW);
                     // Ramp down to minimum cooling temperature
-                    setpoint = TEMPERATURE_COOL_MIN;
+                    setpoint = -1000.0;
                     // Proceed to cooling state
                     reflowState = REFLOW_STATE_COOL;
                 }
@@ -170,9 +190,9 @@ void ReflowController::Start() {
 
             case REFLOW_STATE_COOL:
                 // If minimum cool temperature is achieve
-                if (input <= TEMPERATURE_COOL_MIN) {
+                if (previousTemp <= profile.getCoolDownTargetTemp()) {
                     // Retrieve current time for buzzer usage
-                    buzzerPeriod = millis() + 1000;
+                    //buzzerPeriod = millis() + 1000;
                     // Turn on buzzer and green LED to indicate completion
 //                    digitalWrite(ledGreenPin, LOW);
 //                    digitalWrite(buzzerPin, HIGH);
@@ -195,6 +215,8 @@ void ReflowController::Start() {
 
             case REFLOW_STATE_TOO_HOT:
                 // If oven temperature drops below room temperature
+                Serial.print("TOO HOT: ");
+                Serial.println(currentTemp);
                 if (input < TEMPERATURE_ROOM) {
                     // Ready to reflow
                     reflowState = REFLOW_STATE_IDLE;

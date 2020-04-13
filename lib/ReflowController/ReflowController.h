@@ -106,14 +106,12 @@
 class ReflowController {
 public:
     ReflowController() = default;;
-    ReflowController(MenuSystem &menu, MAX6675 &thermocouple, Profile &profile, Encoder *encoder, byte &heatPin1, byte &heatPin2 ) ;
-
+    ReflowController(MenuSystem &menu, Profile &profile, Encoder *encoder, byte &heatPin1, byte &heatPin2 ) ;
     void Start();
 
 private:
 
     MenuSystem menu;
-    MAX6675 thermocouple;
     Profile profile;
     Encoder * encoder;
 
@@ -127,7 +125,7 @@ private:
     double kp = PID_KP_PREHEAT;
     double ki = PID_KI_PREHEAT;
     double kd = PID_KD_PREHEAT;
-    byte windowSize  = 0;
+    unsigned long windowSize  = 125;
     unsigned long windowStartTime =0;
     unsigned long nextCheck =0;
     unsigned long nextRead =0;

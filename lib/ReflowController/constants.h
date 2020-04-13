@@ -41,7 +41,7 @@ typedef enum DEBOUNCE_STATE {
 #define TEMPERATURE_SOAK_MAX 200
 #define TEMPERATURE_REFLOW_MAX 250
 #define TEMPERATURE_COOL_MIN 100
-#define SENSOR_SAMPLING_TIME 1000
+#define SENSOR_SAMPLING_TIME 500
 #define SOAK_TEMPERATURE_STEP 5
 #define SOAK_MICRO_PERIOD 9000
 #define DEBOUNCE_PERIOD_MIN 50
@@ -49,28 +49,17 @@ typedef enum DEBOUNCE_STATE {
 // ***** PID PARAMETERS *****
 // ***** PRE-HEAT STAGE *****
 #define PID_KP_PREHEAT 100
-#define PID_KI_PREHEAT 0.025
+#define PID_KI_PREHEAT 10
 #define PID_KD_PREHEAT 20
 // ***** SOAKING STAGE *****
-#define PID_KP_SOAK 300
-#define PID_KI_SOAK 0.05
-#define PID_KD_SOAK 250
+#define PID_KP_SOAK 250
+#define PID_KI_SOAK 5
+#define PID_KD_SOAK 50
 // ***** REFLOW STAGE *****
-#define PID_KP_REFLOW 300
-#define PID_KI_REFLOW 0.05
-#define PID_KD_REFLOW 350
-#define PID_SAMPLE_TIME 1000
+#define PID_KP_REFLOW 200
+#define PID_KI_REFLOW 10
+#define PID_KD_REFLOW 30
 
-// ***** LCD MESSAGES *****
-//const char *lcdMessagesReflowStatus[] = {
-//        "Ready",
-//        "Pre-heat",
-//        "Soak",
-//        "Reflow",
-//        "Cool",
-//        "Complete",
-//        "Wait,hot",
-//        "Error"
-//};
+#define PID_SAMPLE_TIME 250
 
 #endif //REFLOW_OVEN_CONSTANTS_H

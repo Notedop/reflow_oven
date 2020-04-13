@@ -11,7 +11,7 @@
 #define thermoCLK 6 //SCK - PIN 12
 
 //SOLID STATE RELAYS
-byte HEAT_PIN = A1; // PIN 23
+byte HEAT_PIN = 8; // PIN 23
 byte HEAT_PIN2 = A2;
 #define FAN_PIN 15 // PIN 24
 

@@ -54,7 +54,7 @@ class Encoder {
 
   private:
 
-    char position;
+    char position = 0;
 
     int8_t pin_a;
 

@@ -1,4 +1,3 @@
-#include <max6675.h>
 #include <Encoder.h>
 #include <constants.h>
 
@@ -8,7 +7,7 @@
 #include <Profile.h>
 #include <ReflowController.h>
 
-MAX6675 temp_sensor;
+
 SSD1306AsciiSoftSpi display;
 
 MenuSystem menu;
@@ -45,24 +44,27 @@ void doEncoderClick() {
     }
 }
 
+
 void setup() {
 
     pinMode(FAN_PIN, OUTPUT);
     digitalWrite(FAN_PIN, HIGH);
     pinMode(HEAT_PIN, OUTPUT);
+    pinMode(HEAT_PIN2, OUTPUT);
     digitalWrite(HEAT_PIN, LOW);
+    digitalWrite(HEAT_PIN2, LOW);
 
     Serial.begin(9600);
     Serial.println(F("start"));
-    temp_sensor.begin(thermoCLK, thermoCS, thermoDO);
+    //temp_sensor.begin(thermoCLK, thermoCS, thermoDO);
 
     attachInterrupt(1, doEncoderScroll, CHANGE);  // encoder pin on interrupt 1 - pin 3
     attachInterrupt(0, doEncoderClick, LOW); //
     display.begin(&Adafruit128x64, OLED_CS, OLED_DC, OLED_CLK, OLED_MOSI, OLED_RESET);
     menu = MenuSystem(&display);
     menu.InitMenu(mnuRoot, cntRoot, 1);
-   Serial.println(F("end"));
-   Serial.println(freeMemory1());
+    Serial.println(F("end"));
+    Serial.println(freeMemory1());
 }
 
 //void setTopText(const char *value, uint8_t  x, uint8_t y, uint8_t size) {
@@ -214,7 +216,8 @@ void loop() {
                     break;
                 case 7: //Start
                 {
-                    ReflowController controller(menu, temp_sensor, activeProfile, &encoder, HEAT_PIN, HEAT_PIN2);
+                    printActiveProfile();
+                    ReflowController controller(menu, activeProfile, &encoder, HEAT_PIN, HEAT_PIN2);
                     controller.Start();
                 }
                     break;
@@ -293,7 +296,7 @@ void loop() {
             switch (clickedItem) {
                 case 1: //target temp
                     if (menu.inputAvailable()) {
-                        activeProfile.setSoakTargetTemp(menu.getInput());
+                        activeProfile.setReflowTargetTemp(menu.getInput());
                         menu.InitMenu(mnuSubReflow, cntSubReflow, 2);
                     } else {
                         minValue = 20;
@@ -375,7 +378,6 @@ void loop() {
                 case 3:
                     menu.InitMenu(mnuSubProfiles, cntSubProfiles, 4);
                     break;
-
             }
     }
 }
