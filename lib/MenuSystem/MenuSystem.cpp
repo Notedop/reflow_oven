@@ -129,3 +129,19 @@ void MenuSystem::ShowInputBox() {
     qmd.Finish();
 
 }
+
+int MenuSystem::getPreviousSelectedIndex() const {
+    return _previousSelectedIndex;
+}
+
+int MenuSystem::getPreviousItemCount() const {
+    return _previousItemCount;
+}
+
+void MenuSystem::setPreviousSelectedIndex(int previousSelectedIndex) {
+    _previousSelectedIndex = previousSelectedIndex;
+}
+
+void MenuSystem::setPreviousItemCount(int previousItemCount) {
+    _previousItemCount = previousItemCount;
+}

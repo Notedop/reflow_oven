@@ -39,7 +39,7 @@ void doEncoderScroll() {
 void doEncoderClick() {
     if ((millis() - lastRead) > debounceDelay) {
         encoder.setClicked(true);
-        //Serial.println(encoder.getClicked());
+        Serial.println(encoder.getClicked());
         lastRead = millis();
     }
 }
@@ -59,7 +59,7 @@ void setup() {
     //temp_sensor.begin(thermoCLK, thermoCS, thermoDO);
 
     attachInterrupt(1, doEncoderScroll, CHANGE);  // encoder pin on interrupt 1 - pin 3
-    attachInterrupt(0, doEncoderClick, LOW); //
+    attachInterrupt(0, doEncoderClick, LOW); // button pin on interrupt 0 - pin 2
     display.begin(&Adafruit128x64, OLED_CS, OLED_DC, OLED_CLK, OLED_MOSI, OLED_RESET);
     menu = MenuSystem(&display);
     menu.InitMenu(mnuRoot, cntRoot, 1);
@@ -151,7 +151,7 @@ void loop() {
                 case 1: //Profiles
                     menu.InitMenu(mnuSubProfiles, cntSubProfiles, 1);
                     break;
-                case 2:
+                case 2: //Settings
 
                     break;
                 case 3:
@@ -165,7 +165,8 @@ void loop() {
         else if (menu.CurrentMenu == mnuSubProfiles) // Root --> Profiles
             switch (clickedItem) {
                 case 1: //Root --> Profiles --> New profile
-                    activeProfile = Profile(1, 150, 80, B00001000, 180, 60, B00101010, 205, 60, B00100010, 50);
+                    activeProfile = Profile();
+                    activeProfile.setProfileNumber(1);
                     menu.InitMenu(mnuSubEditProfile, cntSubEditProfile, 1);
                     break;
                 case 2: //Root --> Profiles -->Existing profile 1
@@ -257,7 +258,13 @@ void loop() {
                     // create menu to define heaters
                     menu.InitMenu(mnuSubPreheat, cntSubPreheat, 5);
                     break;
-                case 5: // back to mnuSubEditProfile
+                case 5: // PID
+                    menu.PreviousMenu = mnuSubPreheat;
+                    menu.setPreviousItemCount(cntSubPreheat);
+                    menu.setPreviousSelectedIndex(clickedItem+1);
+                    menu.InitMenu(mnuSubPID, cntSubPID, 1);
+                    break;
+                case 6: // back to mnuSubEditProfile
                     menu.InitMenu(mnuSubEditProfile, cntSubEditProfile, 3);
                     break;
             }
@@ -288,7 +295,13 @@ void loop() {
                 case 3: //Heaters
                     menu.InitMenu(mnuSubSoak, cntSubSoak, 4);
                     break;
-                case 4: // back to mnuSubEditProfile
+                case 4: // PID
+                    menu.PreviousMenu = mnuSubSoak;
+                    menu.setPreviousItemCount(cntSubSoak);
+                    menu.setPreviousSelectedIndex(clickedItem+1);
+                    menu.InitMenu(mnuSubPID, cntSubPID, 1);
+                    break;
+                case 5: // back to mnuSubEditProfile
                     menu.InitMenu(mnuSubEditProfile, cntSubEditProfile, 4);
                     break;
             }
@@ -322,7 +335,13 @@ void loop() {
                 case 4: // Heaters
                     menu.InitMenu(mnuSubReflow, cntSubReflow, 5);
                     break;
-                case 5: // back to mnuSubEditProfile
+                case 5: // PID
+                    menu.PreviousMenu = mnuSubReflow;
+                    menu.setPreviousItemCount(cntSubReflow);
+                    menu.setPreviousSelectedIndex(clickedItem+1);
+                    menu.InitMenu(mnuSubPID, cntSubPID, 1);
+                    break;
+                case 6: // back to mnuSubEditProfile
                     menu.InitMenu(mnuSubEditProfile, cntSubEditProfile, 5);
                     break;
             }
@@ -341,6 +360,97 @@ void loop() {
                     break;
                 case 2: // back to mnuSubEditProfile
                     menu.InitMenu(mnuSubEditProfile, cntSubEditProfile, 6);
+                    break;
+            }
+        else if (menu.CurrentMenu == mnuSubPID)
+            switch (clickedItem) {
+                case 1: //proportional
+                    if (menu.inputAvailable()) {
+                        if (menu.PreviousMenu == mnuSubPreheat)
+                            activeProfile.setPreHeatPidP(menu.getInput());
+                        if (menu.PreviousMenu == mnuSubSoak)
+                            activeProfile.setSoakPidP(menu.getInput());
+                        if (menu.PreviousMenu == mnuSubReflow)
+                            activeProfile.setReflowPidP(menu.getInput());
+                        menu.InitMenu(mnuSubPID, cntSubPID, 2);
+                    } else {
+                        if (menu.PreviousMenu == mnuSubPreheat) {
+                            minValue = 1;
+                            maxValue = 220;
+                            currentValue = activeProfile.getPreHeatPidP();
+                        }
+                        if (menu.PreviousMenu == mnuSubSoak) {
+                            minValue = 2;
+                            maxValue = 220;
+                            currentValue = activeProfile.getSoakPidP();
+                        }
+                        if (menu.PreviousMenu == mnuSubReflow) {
+                            minValue = 3;
+                            maxValue = 220;
+                            currentValue = activeProfile.getReflowPidP();
+                        }
+                        menu.ShowInputBox("Proportional", minValue, maxValue, currentValue);
+                    }
+                    break;
+                case 2:  //integral
+                    if (menu.inputAvailable()) {
+                        if (menu.PreviousMenu == mnuSubPreheat)
+                            activeProfile.setPreHeatPidI(menu.getInput());
+                        if (menu.PreviousMenu == mnuSubSoak)
+                            activeProfile.setSoakPidI(menu.getInput());
+                        if (menu.PreviousMenu == mnuSubReflow)
+                            activeProfile.setReflowPidI(menu.getInput());
+                        menu.InitMenu(mnuSubPID, cntSubPID, 3);
+                    } else {
+                        if (menu.PreviousMenu == mnuSubPreheat) {
+                            minValue = 1;
+                            maxValue = 220;
+                            currentValue = activeProfile.getPreHeatPidI();
+                        }
+                        if (menu.PreviousMenu == mnuSubSoak) {
+                            minValue = 2;
+                            maxValue = 220;
+                            currentValue = activeProfile.getSoakPidI();
+                        }
+                        if (menu.PreviousMenu == mnuSubReflow) {
+                            minValue = 3;
+                            maxValue = 220;
+                            currentValue = activeProfile.getReflowPidI();
+                        }
+                        menu.ShowInputBox("Integral", minValue, maxValue, currentValue);
+                    }
+                    break;
+                case 3: //derivative
+                    if (menu.inputAvailable()) {
+                        if (menu.PreviousMenu == mnuSubPreheat)
+                            activeProfile.setPreHeatPidD(menu.getInput());
+                        if (menu.PreviousMenu == mnuSubSoak)
+                            activeProfile.setSoakPidD(menu.getInput());
+                        if (menu.PreviousMenu == mnuSubReflow)
+                            activeProfile.setReflowPidD(menu.getInput());
+                        menu.InitMenu(mnuSubPID, cntSubPID, 4);
+                    } else {
+                        if (menu.PreviousMenu == mnuSubPreheat) {
+                            minValue = 1;
+                            maxValue = 220;
+                            currentValue = activeProfile.getPreHeatPidD();
+                        }
+                        if (menu.PreviousMenu == mnuSubSoak) {
+                            minValue = 2;
+                            maxValue = 220;
+                            currentValue = activeProfile.getSoakPidD();
+                        }
+                        if (menu.PreviousMenu == mnuSubReflow) {
+                            minValue = 3;
+                            maxValue = 220;
+                            currentValue = activeProfile.getReflowPidD();
+                        }
+                        menu.ShowInputBox("Derivative", minValue, maxValue, currentValue);
+                    }
+                    break;
+                case 4: //back to ?
+                    menu.InitMenu(menu.PreviousMenu, menu.getPreviousItemCount(),
+                                  menu.getPreviousSelectedIndex());
                     break;
             }
         else if (menu.CurrentMenu == mnuSubProfile1)

@@ -23,6 +23,12 @@ const char itmReflow[] PROGMEM = "Reflow";
 const char itmCool[] PROGMEM = "Cool";
 const char itmDoor[] PROGMEM = "Door";
 
+
+const char itmPID[] PROGMEM = "PID settings";
+const char itmProportional[] PROGMEM = "Proportional";
+const char itmIntegral[] PROGMEM = "Integral";
+const char itmDerivative[] PROGMEM = "Derivative";
+
 const char itmRoot[] PROGMEM = "Reflow Oven Menu";
 const char itmSubmenuProfiles[] PROGMEM = "Profiles";
 const char itmNewProfile[] PROGMEM = "New profile";
@@ -50,12 +56,12 @@ const int cntSubProfiles = 5;
     const char *const mnuSubEditProfile[] PROGMEM = {itmNewProfile, itmProfileX, itmPreheat, itmSoak, itmReflow, itmCool, itmSave, itmStart, itmBack};
     const int cntSubEditProfile = 8;
 
-        const char *const mnuSubPreheat[] PROGMEM = {itmPreheat, itmTarget, itmMaxTime, itmRisePerSeconds, itmHeaters, itmBack};
-        const int cntSubPreheat = 5;
-        const char *const mnuSubSoak[] PROGMEM = {itmSoak, itmTarget, itmMaxTime, itmHeaters, itmBack};
-        const int cntSubSoak = 4;
-        const char *const mnuSubReflow[] PROGMEM = {itmPreheat, itmTarget, itmMaxTime, itmRisePerSeconds, itmHeaters, itmBack};
-        const int cntSubReflow = 5;
+        const char *const mnuSubPreheat[] PROGMEM = {itmPreheat, itmTarget, itmMaxTime, itmRisePerSeconds, itmHeaters, itmPID, itmBack};
+        const int cntSubPreheat = 6;
+        const char *const mnuSubSoak[] PROGMEM = {itmSoak, itmTarget, itmMaxTime, itmHeaters, itmPID, itmBack};
+        const int cntSubSoak = 5;
+        const char *const mnuSubReflow[] PROGMEM = {itmPreheat, itmTarget, itmMaxTime, itmRisePerSeconds, itmHeaters, itmPID, itmBack};
+        const int cntSubReflow = 6;
         const char *const mnuSubCool[] PROGMEM = {itmCool, itmTarget, itmBack};
         const int cntSubCool = 2;
 
@@ -65,3 +71,8 @@ const char *const mnuSubProfile2[] PROGMEM = {itmProfile2, itmEdit, itmStart, it
 const int cntSubProfile2 = 3;
 const char *const mnuSubProfile3[] PROGMEM = {itmProfile3, itmEdit, itmStart, itmBack};
 const int cntSubProfile3 = 3;
+
+const char *const mnuSubPID[] PROGMEM = {itmPID, itmProportional, itmIntegral, itmDerivative, itmBack};
+const int cntSubPID = 4;
+
+
