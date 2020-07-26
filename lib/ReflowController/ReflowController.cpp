@@ -118,7 +118,7 @@ void ReflowController::Start() {
                     reflowState = REFLOW_STATE_TOO_HOT;
                 } else {
                     // If switch is pressed to start reflow process
-                    if (encoder->getClicked()) {
+                    if (encoder->isClicked()) {
                         // Send header for CSV file
                         Serial.println("Time Setpoint Input Output Temp reflowState");
                         // Intialize seconds timer for serial debug information
@@ -236,7 +236,7 @@ void ReflowController::Start() {
             }
         }
 
-        if (encoder->getClicked()) {
+        if (encoder->isClicked()) {
             switchStatus = SWITCH_1;
         } else {
             switchStatus = SWITCH_NONE;

@@ -34,11 +34,22 @@ public:
 
     void setInputAvailable(bool inputAvailable);
 
+    void increment();
+
+    void decrement();
+
+    int getChangeByValue() const;
+
+    void setChangeByValue(int changeByValue);
+
+    void nextChangeByValue();
+
 private:
 
     int _minValue;
     int _maxValue;
     int _currentValue;
+    int _changeByValue = 1;
     bool _waitingForInput;
     bool _inputAvailable;
     const char* _title;

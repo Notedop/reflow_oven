@@ -51,13 +51,13 @@ int MenuSystem::ProcessMenu(int action) {
 
     } else {
         if (action == ACTION_DOWN)
-            if (_inputBox.getCurrentValue() < _inputBox.getMaxValue()) {
-                _inputBox.setCurrentValue(_inputBox.getCurrentValue() + 1);
+            if (_inputBox.getCurrentValue()+_inputBox.getChangeByValue() <= _inputBox.getMaxValue()) {
+                _inputBox.increment();
                 ShowInputBox();
             }
         if (action == ACTION_UP)
-            if (_inputBox.getCurrentValue() > _inputBox.getMinValue()) {
-                _inputBox.setCurrentValue(_inputBox.getCurrentValue() - 1);;
+            if (_inputBox.getCurrentValue()-_inputBox.getChangeByValue() >= _inputBox.getMinValue()) {
+                _inputBox.decrement();
                 ShowInputBox();
             }
         if (action == ACTION_SELECT) {
@@ -66,6 +66,11 @@ int MenuSystem::ProcessMenu(int action) {
             _inputBox.setInputAvailable(true);
             //return selected index, so that we return to previous selected menu.
             return _selectedIndex;
+        }
+        if (action == ACTION_LONG) {
+            Serial.println("Menu: Action Long");
+            _inputBox.nextChangeByValue();
+            ShowInputBox();
         }
     }
     return 0;

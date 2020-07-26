@@ -50,8 +50,9 @@ void MenuDisplay::ShowInputBox(customInputBox inputBox) {
     int number = inputBox.getCurrentValue();
     int digits = 0;
     do { number /= 10; digits++; } while (number != 0);
-
-    this->Title(inputBox.getTitle());
+    char titleBuffer[30];
+    sprintf(titleBuffer, "%s-%i", inputBox.getTitle(), inputBox.getChangeByValue());
+    this->Title(titleBuffer);
     disp->set2X();
     disp->setCursor((disp->displayWidth()/2)-((disp->fontWidth()*digits)/2),(disp->displayRows()/2)-(disp->fontRows()/2));
     disp->setInvertMode(true);

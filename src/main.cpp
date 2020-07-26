@@ -22,6 +22,7 @@ byte chartPos = 0;
 
 unsigned long lastRead = 0;
 unsigned long debounceDelay = 50;
+unsigned long longClickTime = 800;
 
 word intervalSensorRead = 10000;
 unsigned long tempMillis = 0;
@@ -37,16 +38,28 @@ void doEncoderScroll() {
 }
 
 void doEncoderClick() {
-    if ((millis() - lastRead) > debounceDelay) {
-        encoder.setClicked(true);
-        Serial.println(encoder.getClicked());
+    if (digitalRead(encoder0Button)) { //button is released
+        if ((millis() - lastRead) > debounceDelay) {
+            if ((millis() - lastRead) > longClickTime) {
+                encoder.setLongClicked(true);
+                Serial.println("Long click");
+            } else {
+                Serial.println("Short click");
+                encoder.setClicked(true);
+            }
+            //Serial.println("released");
+            lastRead = millis();
+        }
+    } else { //button is pressed
         lastRead = millis();
+        //Serial.println("pressed");
     }
 }
 
 
 void setup() {
 
+    pinMode(encoder0Button, INPUT_PULLUP);
     pinMode(FAN_PIN, OUTPUT);
     digitalWrite(FAN_PIN, HIGH);
     pinMode(HEAT_PIN, OUTPUT);
@@ -59,7 +72,7 @@ void setup() {
     //temp_sensor.begin(thermoCLK, thermoCS, thermoDO);
 
     attachInterrupt(1, doEncoderScroll, CHANGE);  // encoder pin on interrupt 1 - pin 3
-    attachInterrupt(0, doEncoderClick, LOW); // button pin on interrupt 0 - pin 2
+    attachInterrupt(0, doEncoderClick, CHANGE); // button pin on interrupt 0 - pin 2
     display.begin(&Adafruit128x64, OLED_CS, OLED_DC, OLED_CLK, OLED_MOSI, OLED_RESET);
     menu = MenuSystem(&display);
     menu.InitMenu(mnuRoot, cntRoot, 1);
@@ -128,13 +141,15 @@ void loop() {
         encoder.setPosition(0); //reset the position
         Serial.print(F("ACTION_DOWN"));
         Serial.println(freeMemory1());
-    } else if (encoder.getPosition() <= -2) {
+    }
+    if (encoder.getPosition() <= -2) {
         Serial.println(F("ACTION_UP"));
         menu.ProcessMenu(ACTION_UP);
         encoder.setPosition(0); //reset the position
         Serial.print(F("ACTION_UP"));
         Serial.println(freeMemory1());
-    } else if (encoder.getClicked()) {
+    }
+    if (encoder.isClicked()) {
         //Serial.println(F("ACTION_SELECT"));
         clickedItem = menu.ProcessMenu(ACTION_SELECT);
         //Serial.print(F("ClickedItem:"));
@@ -142,6 +157,11 @@ void loop() {
         encoder.resetClicked(); //reset the position
         Serial.print(F("ACTION_SELECT"));
         Serial.println(freeMemory1());
+    }
+
+    if (encoder.isLongClicked()) {
+        clickedItem = menu.ProcessMenu(ACTION_LONG);
+        encoder.resetClicked();
     }
 
     if (clickedItem > 0) {
@@ -375,20 +395,16 @@ void loop() {
                         menu.InitMenu(mnuSubPID, cntSubPID, 2);
                     } else {
                         if (menu.PreviousMenu == mnuSubPreheat) {
-                            minValue = 1;
-                            maxValue = 220;
                             currentValue = activeProfile.getPreHeatPidP();
                         }
                         if (menu.PreviousMenu == mnuSubSoak) {
-                            minValue = 2;
-                            maxValue = 220;
                             currentValue = activeProfile.getSoakPidP();
                         }
                         if (menu.PreviousMenu == mnuSubReflow) {
-                            minValue = 3;
-                            maxValue = 220;
                             currentValue = activeProfile.getReflowPidP();
                         }
+                        minValue = 1;
+                        maxValue = 250;
                         menu.ShowInputBox("Proportional", minValue, maxValue, currentValue);
                     }
                     break;
@@ -403,20 +419,16 @@ void loop() {
                         menu.InitMenu(mnuSubPID, cntSubPID, 3);
                     } else {
                         if (menu.PreviousMenu == mnuSubPreheat) {
-                            minValue = 1;
-                            maxValue = 220;
                             currentValue = activeProfile.getPreHeatPidI();
                         }
                         if (menu.PreviousMenu == mnuSubSoak) {
-                            minValue = 2;
-                            maxValue = 220;
                             currentValue = activeProfile.getSoakPidI();
                         }
                         if (menu.PreviousMenu == mnuSubReflow) {
-                            minValue = 3;
-                            maxValue = 220;
                             currentValue = activeProfile.getReflowPidI();
                         }
+                        minValue = 1;
+                        maxValue = 250;
                         menu.ShowInputBox("Integral", minValue, maxValue, currentValue);
                     }
                     break;
@@ -431,20 +443,16 @@ void loop() {
                         menu.InitMenu(mnuSubPID, cntSubPID, 4);
                     } else {
                         if (menu.PreviousMenu == mnuSubPreheat) {
-                            minValue = 1;
-                            maxValue = 220;
                             currentValue = activeProfile.getPreHeatPidD();
                         }
                         if (menu.PreviousMenu == mnuSubSoak) {
-                            minValue = 2;
-                            maxValue = 220;
                             currentValue = activeProfile.getSoakPidD();
                         }
                         if (menu.PreviousMenu == mnuSubReflow) {
-                            minValue = 3;
-                            maxValue = 220;
                             currentValue = activeProfile.getReflowPidD();
                         }
+                        minValue = 1;
+                        maxValue = 250;
                         menu.ShowInputBox("Derivative", minValue, maxValue, currentValue);
                     }
                     break;
@@ -460,6 +468,8 @@ void loop() {
                     break;
                 case 2: //start
                     printActiveProfile();
+                    ReflowController controller(menu, activeProfile, &encoder, HEAT_PIN, HEAT_PIN2);
+                    controller.Start();
                     break;
                 case 3:
                     menu.InitMenu(mnuSubProfiles, cntSubProfiles, 2);
@@ -472,6 +482,8 @@ void loop() {
                     break;
                 case 2:
                     printActiveProfile();
+                    ReflowController controller(menu, activeProfile, &encoder, HEAT_PIN, HEAT_PIN2);
+                    controller.Start();
                     break;
                 case 3:
                     menu.InitMenu(mnuSubProfiles, cntSubProfiles, 3);
@@ -484,6 +496,8 @@ void loop() {
                     break;
                 case 2:
                     printActiveProfile();
+                    ReflowController controller(menu, activeProfile, &encoder, HEAT_PIN, HEAT_PIN2);
+                    controller.Start();
                     break;
                 case 3:
                     menu.InitMenu(mnuSubProfiles, cntSubProfiles, 4);

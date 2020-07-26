@@ -50,3 +50,33 @@ const char *customInputBox::getTitle() const {
     return _title;
 }
 
+void customInputBox::increment() {
+
+    _currentValue = _currentValue + _changeByValue;
+
+}
+
+void customInputBox::decrement() {
+    _currentValue = _currentValue - _changeByValue;
+}
+
+int customInputBox::getChangeByValue() const {
+    return _changeByValue;
+}
+
+void customInputBox::setChangeByValue(int changeByValue) {
+    _changeByValue = changeByValue;
+}
+
+void customInputBox::nextChangeByValue() {
+
+    if (_changeByValue == 1 ) {
+        _changeByValue = 10;
+    } else if (_changeByValue == 10 ) {
+        _changeByValue = 100;
+    } else if (_changeByValue == 100) {
+        _changeByValue = 1;
+    }
+
+}
+

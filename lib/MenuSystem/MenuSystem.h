@@ -18,6 +18,7 @@
 #define ACTION_DOWN    2
 #define ACTION_SELECT  3
 #define ACTION_BACK    4
+#define ACTION_LONG    5
 
 
 class MenuSystem {

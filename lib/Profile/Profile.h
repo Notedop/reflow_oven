@@ -94,7 +94,7 @@ public:
 
     void loadProfile(byte profileNumber);
 
-    Profile() = default;
+    Profile() {}
 
 private:
 

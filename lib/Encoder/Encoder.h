@@ -40,7 +40,7 @@ class Encoder {
       position = p;
     };
 
-    bool getClicked (){
+    bool isClicked (){
       return clicked;
     }
 
@@ -48,8 +48,17 @@ class Encoder {
       clicked=c;
     }
 
+    bool isLongClicked() const {
+        return longClicked;
+    }
+
+    void setLongClicked(bool longClicked) {
+        Encoder::longClicked = longClicked;
+    }
+
     void resetClicked() {
-      clicked=false;
+      clicked = false;
+      longClicked = false;
     }
 
   private:
@@ -63,6 +72,8 @@ class Encoder {
     int8_t pin_c;
 
     bool clicked = false;
+
+    bool longClicked = false;
 
 };
 
